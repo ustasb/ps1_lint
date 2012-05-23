@@ -77,10 +77,13 @@ validColors = {
 	'BgIWhite':		r'\e[0;107m' 
 }
 
+colorRE = re.compile(r'\\e\[\d{,2};?\d{,3}m')
+
+# Prompt Variables from: 
 promptVars = {
 	'bell':				r'\a',
 	'date':				r'\d',
-	'strftime':			r'\D{format}',
+	#'strftime':			r'D{format}',
 	'escape':			r'\e',
 	'hostnameMin':		r'\h',
 	'hostnameFull':		r'\H',
@@ -100,27 +103,58 @@ promptVars = {
 	'basename$PWD':		r'\W',
 	'historyNumber':	r'\!',
 	'commandNumber':	r'\#',
-	'effUID':			r'\$',
-	'octalValChr':		r'\nnn',
-	'backslash':		r'\\',
-	'beginSequence':	r'\[',
-	'endSequence':		r'\]'
+	'effUID':			r'\$'
+	#'octalValChr':		r'nnn',
+	#'backslash':		r'\\',
 }
 
+def validateVar(ps1):
+	for val in promptVars.values():
+		if val == ps1[0:2]:
+			print('Matched {}'.format(val))
+			return 2 
 
+	raise ValueError("Sorry, {} is an invalid error".format(ps1[0:2]))
+
+def validateColor(ps1):
+	return re.match(colorRE, ps1).group(0)
+
+def validateEscape(ps1):
+	l = len(ps1)
+	i = 0
+
+	while i < l:
+		if ps1[i:i + 2] == r'\e':
+			colorStr = validateColor(ps1[i:]) 
+			i += len(colorStr)
+			if ps1[i:i + 2] == r'\]':
+				print('Matched {}'.format(ps1[:i + 2]))
+				# Return the length of the escaped expression
+				return i + 2
+		else:
+			pass
+		
+		i += 1
+	
 def main():
 	testPS1 = r'[\u@\h \W]\$'
+	testPS1 = r'\[\e[1;32m\][\u@\h \W]\$\[\e[0m\]'
 	
-	for chr in testPS1:
-		if chr == '\\':
+	pos = 0
+	g = len(testPS1)
+
+	while pos < g:
+		if testPS1[pos] == '\\':
+			if testPS1[pos + 1] == r'[':
+				pos += validateEscape(testPS1[pos:])
+			else:
+				pos += validateVar(testPS1[pos:])		
 			continue
-		print(chr)
+		else:
+			print('{} is a valid character'.format(testPS1[pos]))
 
+		pos += 1
 
-	"""validPS1 = open('validPS1s.txt', mode='rt', encoding='utf=8')
-	
-	for ps1 in validPS1.readlines():
-		print(ps1, end='')
-	"""
+	print('{} is a valid PS1'.format(testPS1))
+
 if __name__ == "__main__": main()
-	
