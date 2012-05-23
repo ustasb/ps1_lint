@@ -108,13 +108,19 @@ promptVars = {
 	#'backslash':		r'\\',
 }
 
+def logIssue(ps1, pos, msg, err=True):
+	print(ps1)
+	print('{}^\n{}: {}'.format('-' * (pos - 1),'Error' if err else 'Warning', msg))
+	if err:
+		raise SystemExit(0)
+	
 def validateVar(ps1):
 	for val in promptVars.values():
 		if val == ps1[0:2]:
 			print('Matched {}'.format(val))
 			return 2 
 
-	raise ValueError("Sorry, {} is an invalid error".format(ps1[0:2]))
+	logIssue(ps1, 2, '{} is an invalid prompt variable'.format(ps1[0:2]))
 
 def validateColor(ps1):
 	return re.match(colorRE, ps1).group(0)
@@ -135,26 +141,29 @@ def validateEscape(ps1):
 			pass
 		
 		i += 1
-	
-def main():
-	testPS1 = r'[\u@\h \W]\$'
-	testPS1 = r'\[\e[1;32m\][\u@\h \W]\$\[\e[0m\]'
-	
-	pos = 0
-	g = len(testPS1)
 
-	while pos < g:
-		if testPS1[pos] == '\\':
-			if testPS1[pos + 1] == r'[':
-				pos += validateEscape(testPS1[pos:])
+def parsePS1(ps1):
+	pos = 0
+	l = len(ps1)
+
+	while pos < l:
+		if ps1[pos] == '\\':
+			if ps1[pos + 1] == r'[':
+				pos += validateEscape(ps1[pos:])
 			else:
-				pos += validateVar(testPS1[pos:])		
+				pos += validateVar(ps1[pos:])		
 			continue
 		else:
-			print('{} is a valid character'.format(testPS1[pos]))
+			print('{} is a valid character'.format(ps1[pos]))
 
 		pos += 1
 
-	print('{} is a valid PS1'.format(testPS1))
+	print('{} is a valid PS1'.format(ps1))
+	
+def main():
+	testPS1 = r'[\z@\h \W]\$'
+	testPS12 = r'\[\e[1;32m\][\u@\h \W]\$\[\e[0m\]'
+	parsePS1(testPS1)
+	parsePS1(testPS12)
 
 if __name__ == "__main__": main()
