@@ -5,6 +5,7 @@ import re
 colorRE = re.compile(r'\\e\[\d{,2};?\d{,3}m')
 
 # Prompt Variables from: 
+# http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
     'bell':             r'\\a',
     'date':             r'\\d',
@@ -39,14 +40,20 @@ def logIssue(ps1, pos, msg, err=True):
     if err:
         raise SystemExit(0)
     
-def validateVar(ps1):
+def validVar(testVar):
     for regex in promptVars.values():
-        print(regex, ps1)
-        match = re.match(regex, ps1)
-        if match: 
-            return len(match.group(0)) 
+        match = re.match(regex, testVar)
+        if match is not None:
+            return match.group(0)
 
-    logIssue(ps1, 2, '{} is an invalid prompt variable'.format(ps1))
+    return False
+
+def validateVar(ps1):
+    match = validVar(ps1)
+    if match is not False:
+        return len(match) 
+    else:
+        logIssue(ps1, 2, '{0} is an invalid prompt variable'.format(ps1[:2]))
 
 def validateColor(ps1):
     colorStr = re.match(colorRE, ps1)
@@ -64,7 +71,6 @@ def validateEscape(ps1):
             colorStr = validateColor(ps1[pos:]) 
             pos += len(colorStr)
             if ps1[pos:pos + 2] == r'\]':
-                #print('Matched {}'.format(ps1[:i + 2]))
                 # Return the length of the escaped expression
                 return pos + 2
             else:
@@ -88,9 +94,13 @@ def parsePS1(ps1):
             else:
                 pos += validateVar(ps1[pos:])        
         else:
+            print(ps1[pos])
+            match = validVar('\\' + ps1[pos])
+            if match is not False:
+                logIssue(ps1, pos + 1, 'Did you mean {0}?'.format(match), False)
             pos += 1
     
-    print('{} is a valid PS1'.format(ps1))
+    print('{0} is a valid PS1'.format(ps1))
     
 def main():
     import os
