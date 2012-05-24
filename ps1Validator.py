@@ -41,17 +41,17 @@ def logIssue(ps1, pos, msg, err=True):
         raise SystemExit(0)
     
 def validVar(testVar):
-    for regex in promptVars.values():
-        match = re.match(regex, testVar)
+    for key in promptVars:
+        match = re.match(promptVars[key], testVar)
         if match is not None:
-            return match.group(0)
+            return {'match': match.group(0), 'type': key}
 
     return False
 
 def validateVar(ps1):
     match = validVar(ps1)
     if match is not False:
-        return len(match) 
+        return len(match['match']) 
     else:
         logIssue(ps1, 2, '{0} is an invalid prompt variable'.format(ps1[:2]))
 
@@ -94,10 +94,11 @@ def parsePS1(ps1):
             else:
                 pos += validateVar(ps1[pos:])        
         else:
-            print(ps1[pos])
             match = validVar('\\' + ps1[pos])
             if match is not False:
-                logIssue(ps1, pos + 1, 'Did you mean {0}?'.format(match), False)
+                logIssue(ps1, pos + 1,
+                         'Did you mean {0} ({1})?'.format(match['match'], match['type']), 
+                         False)
             pos += 1
     
     print('{0} is a valid PS1'.format(ps1))
@@ -111,3 +112,5 @@ def main():
             parsePS1(line.strip())
 
 if __name__ == "__main__": main()
+
+
