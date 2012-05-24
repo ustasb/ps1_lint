@@ -7,31 +7,31 @@ colorRE = re.compile(r'\\e\[\d{,2};?\d{,3}m')
 # Prompt Variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
-    'bell':             r'\\a',
-    'date':             r'\\d',
-    'escape':           r'\\e',
-    'hostnameMin':      r'\\h',
-    'hostnameFull':     r'\\H',
-    'jobs':             r'\\j',
-    'deviceName':       r'\\l',
-    'newline':          r'\\n',
-    'carriageReturn':   r'\\r',
-    'shellName':        r'\\s',
-    'time24HH:MM:SS':   r'\\t',
-    'time12HH:MM:SS':   r'\\T',
-    'time12AMPM':       r'\\@',
-    'time24HH:MM':      r'\\A',
-    'username':         r'\\u',
-    'bashVersion':      r'\\v',
-    'bashRelease':      r'\\V',
-    'cwd':              r'\\w',
-    'basename$PWD':     r'\\W',
-    'historyNumber':    r'\\!',
-    'commandNumber':    r'\\#',
-    'effUID':           r'\\\$',
-    'backslash':        r'\\\\',
-    'octalValChr':      r'\d{3}',
-    'strftime':         r'\\D\{%[a-zA-z\+%]+\}'
+    'bell':                         r'\\a',
+    'date':                         r'\\d',
+    'escape':                       r'\\e',
+    'short hostname':               r'\\h',
+    'full hostname':                r'\\H',
+    'jobs':                         r'\\j',
+    'device name':                  r'\\l',
+    'newline':                      r'\\n',
+    'carriage return':              r'\\r',
+    'shell name':                   r'\\s',
+    'time 24HH:MM:SS':              r'\\t',
+    'time 12HH:MM:SS':              r'\\T',
+    'time 12AM/PM':                 r'\\@',
+    'time 24HH:MM':                 r'\\A',
+    'username':                     r'\\u',
+    'bash version':                 r'\\v',
+    'bash release':                 r'\\V',
+    'current working directory':    r'\\w',
+    'basename $PWD':                r'\\W',
+    'history number':               r'\\!',
+    'command number':               r'\\#',
+    'effective UID':                r'\\\$',
+    'backslash':                    r'\\\\',
+    'ASCII code':                   r'\d{3}',
+    'strftime':                     r'\\D\{%[a-zA-z\+%]+\}'
 }
 
 def logIssue(ps1, pos, msg, err=True):
@@ -112,5 +112,3 @@ def main():
             parsePS1(line.strip())
 
 if __name__ == "__main__": main()
-
-
