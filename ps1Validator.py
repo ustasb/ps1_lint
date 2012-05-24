@@ -4,7 +4,7 @@ import re
 
 colorRegex = re.compile(r'\\e\[\d{,2};?\d{,3}m')
 
-# Prompt Variables from: 
+# Prompt variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
     'bell':                         r'\\a',
@@ -35,8 +35,8 @@ promptVars = {
 }
 
 def logIssue(ps1, pos, msg, err=True):
-    print('{0}\n{1}^\n{2}: {3}'.format(ps1, '-' * (pos - 1),
-                                       'Error' if err else 'Warning', msg))
+    print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
+                                         ps1, '-' * (pos - 1)))
     if err:
         print('Exiting...')
         raise SystemExit(0)
@@ -71,15 +71,10 @@ def validateEscape(ps1):
         if ps1[pos:pos + 2] == r'\e':
             colorStr = validateColor(ps1[pos:]) 
             pos += len(colorStr)
-            if ps1[pos:pos + 2] == r'\]':
-                # Return the length of the escaped expression
-                return pos + 2
-            else:
-                logIssue(ps1, pos,
-                         'Escape sequence not closed after declared color code.')
-        else:
-            pass
-        
+        if ps1[pos:pos + 2] == r'\]':
+            # Return the length of the escaped expression
+            return pos + 2
+
         pos += 1
     
     logIssue(ps1, 0, 'Escape sequence was never closed.')
@@ -99,7 +94,7 @@ def parsePS1(ps1):
             if match is not False:
                 logIssue(ps1, pos + 1,
                          'Did you mean "{0}" ({1})?'.format(match['match'], 
-                                                          match['type']), 
+                                                            match['type']), 
                          False)
             pos += 1
     
@@ -107,7 +102,7 @@ def parsePS1(ps1):
     
 def main():
     import os
-    test = r'\u@\z: '
+    test = r'\[\e[0;30mryuh\]tj: '
     parsePS1(test)
     """ 
     validPS1s = open("validPS1s.txt")
