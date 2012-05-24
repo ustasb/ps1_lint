@@ -109,21 +109,24 @@ promptVars = {
 }
 
 def logIssue(ps1, pos, msg, err=True):
-	print(ps1)
-	print('{}^\n{}: {}'.format('-' * (pos - 1),'Error' if err else 'Warning', msg))
+	print('{}\n{}^\n{}: {}'.format(ps1, '-' * (pos - 1), 'Error' if err else 'Warning', msg))
 	if err:
 		raise SystemExit(0)
 	
 def validateVar(ps1):
 	for val in promptVars.values():
 		if val == ps1[0:2]:
-			print('Matched {}'.format(val))
+			#print('Matched {}'.format(val))
 			return 2 
 
 	logIssue(ps1, 2, '{} is an invalid prompt variable'.format(ps1[0:2]))
 
 def validateColor(ps1):
-	return re.match(colorRE, ps1).group(0)
+	colorStr = re.match(colorRE, ps1)
+	if colorStr:
+		return colorStr.group(0)
+	else:
+		logIssue(ps1, 0, 'Color code is not properly formatted')
 
 def validateEscape(ps1):
 	l = len(ps1)
@@ -134,13 +137,15 @@ def validateEscape(ps1):
 			colorStr = validateColor(ps1[i:]) 
 			i += len(colorStr)
 			if ps1[i:i + 2] == r'\]':
-				print('Matched {}'.format(ps1[:i + 2]))
+				#print('Matched {}'.format(ps1[:i + 2]))
 				# Return the length of the escaped expression
 				return i + 2
 		else:
 			pass
 		
 		i += 1
+	
+	logIssue(ps1, 0, 'Escape sequence was never closed.')
 
 def parsePS1(ps1):
 	pos = 0
@@ -154,16 +159,18 @@ def parsePS1(ps1):
 				pos += validateVar(ps1[pos:])		
 			continue
 		else:
-			print('{} is a valid character'.format(ps1[pos]))
+			pass
 
 		pos += 1
 
 	print('{} is a valid PS1'.format(ps1))
 	
 def main():
-	testPS1 = r'[\z@\h \W]\$'
-	testPS12 = r'\[\e[1;32m\][\u@\h \W]\$\[\e[0m\]'
-	parsePS1(testPS1)
-	parsePS1(testPS12)
+	import os
+	
+	validPS1s = open("validPS1s.txt")
+	for line in validPS1s:
+		if line[0] != '#' and line[0] != '\n':
+			parsePS1(line.strip())
 
 if __name__ == "__main__": main()
