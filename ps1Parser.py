@@ -88,15 +88,15 @@ def validateVar(ps1):
     else:
         logIssue(0, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
-def validateColor(ps1, pos):
+def validateColor(ps1, pos=0):
     colorStr = re.match(_colorRegex, ps1)
     if colorStr:
         return colorStr.group(0)
     else:
         for i, chr in enumerate(ps1):
             if re.match(colorRegexTpl[i], chr) is None:
-                logIssue(pos, 'Invalid color code. Mising "{0}" '
-                              'in sequence "\e[x;ym".'.format(colorRegexTpl[i]))
+                logIssue(pos, 'Invalid color code. Mising "{0}" in sequence '
+                              '"\e[x;ym".'.format(colorRegexTpl[i]))
 
 def validateEscape(ps1):
     escapeSeqLen = 2 # \]
@@ -122,13 +122,3 @@ def validateEscape(ps1):
         pos += 1
     
     logIssue(0, 'Escape sequence was never closed.')
-
-def main():
-    import os
-
-    validPS1s = open("validPS1s.txt")
-    for line in validPS1s:
-        if line[0] != '#' and line[0] != '\n':
-            parse(line.strip())
-
-if __name__ == "__main__": main()
