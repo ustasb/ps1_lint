@@ -2,6 +2,7 @@
 
 import re
 
+colorRegexTpl = (r'\\', r'(e|033)', r'\[', r'\d{,2}', r';?', r'\d{,3}', r'm')
 # Prompt variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
@@ -34,7 +35,7 @@ promptVars = {
 
 _fullPS1 = None
 _parserPos = 0
-_colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
+_colorRegex = re.compile(''.join(colorRegexTpl))
 
 def parse(ps1, warnings=False): 
     global _fullPS1, _parserPos
@@ -53,8 +54,8 @@ def parse(ps1, warnings=False):
                 if warnings is True:
                     match = validVar('\\' + ps1[_parserPos])
                     if match is not False:
-                        msg = 'Did you mean "{0}" ({1})?'.format(match['match'], 
-                                                                 match['type'])
+                        msg = ('Did you mean "{0}"'
+                              '({1})?'.format(match['match'], match['type']))
                         logIssue(1, msg, False)
 
                 _parserPos += 1
@@ -93,19 +94,31 @@ def validateColor(ps1):
     if colorStr:
         return colorStr.group(0)
     else:
-        logIssue(3, 'Color code is not properly formatted.')
+        for i, chr in enumerate(ps1):
+            if re.match(colorRegexTpl[i], chr) is None:
+                logIssue(i + 4, 'Color code is not properly formatted. '
+                                'Mising "{0}".'.format(colorRegexTpl[i]))
 
 def validateEscape(ps1):
-    pos = 0
+    escapeSeqLen = 2 # \]
+    pos = escapeSeqLen
     l = len(ps1)
 
     while pos < l:
+        print(ps1[pos])
         if ps1[pos:pos + 2] == r'\e':
             colorStr = validateColor(ps1[pos:]) 
             pos += len(colorStr)
+        else:
+            match = re.match(r'[\'"].*[\'"]', ps1[pos:])
+            if match is not None:
+                pos += len(match.group(0))
+            else:
+                logIssue(pos + 1, 'Meaningless character(s) inside'
+                                  'escape sequence.') 
         if ps1[pos:pos + 2] == r'\]':
             # Return the length of the escaped expression
-            return pos + 2
+            return pos + escapeSeqLen
 
         pos += 1
     
