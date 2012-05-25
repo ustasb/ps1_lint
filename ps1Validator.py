@@ -42,22 +42,25 @@ class PS1Parser():
         self._pos = 0
         l = len(ps1)
 
-        while self._pos < l:
-            if ps1[self._pos] == '\\':
-                if ps1[self._pos + 1] == r'[':
-                    self._pos += self.validateEscape(ps1[self._pos:])
+        try:
+            while self._pos < l:
+                if ps1[self._pos] == '\\':
+                    if ps1[self._pos + 1] == r'[':
+                        self._pos += self.validateEscape(ps1[self._pos:])
+                    else:
+                        self._pos += self.validateVar(ps1[self._pos:])        
                 else:
-                    self._pos += self.validateVar(ps1[self._pos:])        
-            else:
-                match = self.validVar('\\' + ps1[self._pos])
-                if match is not False:
-                    self.logIssue(1,
-                             'Did you mean "{0}" ({1})?'.format(match['match'], 
-                                                                match['type']), 
-                             False)
-                self._pos += 1
-        
-        print('Success: "{0}" is a valid PS1.'.format(ps1))
+                    match = self.validVar('\\' + ps1[self._pos])
+                    if match is not False:
+                        self.logIssue(1,
+                                 'Did you mean "{0}" ({1})?'.format(match['match'], 
+                                                                    match['type']), 
+                                 False)
+                    self._pos += 1
+        except SyntaxError:
+            print("Exiting...")
+        else:
+            print('Success: "{0}" is a valid PS1.'.format(ps1))
 
     def logIssue(self, deltaPos, msg, err=True):
         # Minus 1 to leave room for caret
@@ -66,8 +69,7 @@ class PS1Parser():
         print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
                                            self.ps1, '-' * deltaPos))
         if err:
-            print('Exiting...')
-            raise SystemExit(0)
+            raise SyntaxError()
         
     def validVar(self, testVar):
         for key in promptVars:
