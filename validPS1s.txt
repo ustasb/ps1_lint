@@ -8,7 +8,7 @@
 this is my super prompt >
 \u@\h >
 \[\e[32;1m\]\w> \[\e[0m\]
-\[\e[36;1m\]\u@\[\e[32;1m\]\h> \[\e[0m\]
+\[\e[36;1\]\u@\[\e[32;1m\]\h> \[\e[0m\]
 
 # http://maketecheasier.com/8-useful-and-interesting-bash-prompts/2009/09/04
 #\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]O_O\[\e[0m\]; fi\`[\u@\h:\w]\\$
