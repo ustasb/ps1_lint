@@ -36,7 +36,7 @@ promptVars = {
 _fullPS1 = None
 _parserPos = 0
 _colorRegex = re.compile(''.join(colorRegexTpl))
-# http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
+# Cursor movement: http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
 _cursorMvmentRegex = re.compile(r'\[\d?\d?;?\d?\d?[HfABCDJKsu]')
 
 def parse(ps1, warnings=False): 
@@ -91,7 +91,6 @@ def validateVar(ps1):
         logIssue(0, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
 def validateColor(ps1, pos=0):
-    print(ps1)
     colorStr = re.match(_colorRegex, ps1)
     if colorStr:
         return colorStr.group(0)
@@ -114,6 +113,7 @@ def validateEscape(ps1):
             cursorMvmentMatch = re.match(_cursorMvmentRegex, ps1[pos:])
             if cursorMvmentMatch is not None:
                 pos += len(cursorMvmentMatch.group(0))
+            # If there's no match, assume the author intended a color code.
             else:
                 colorStr = validateColor(ps1[pos:], pos) 
                 pos += len(colorStr)
@@ -126,7 +126,7 @@ def validateEscape(ps1):
                               'escape sequence.'.format(ps1[pos])) 
 
         if ps1[pos:pos + 2] == r'\]':
-            # Return the entire length of the escaped expression
+            # Return the entire length of the escaped expression.
             return pos + escapeSeqLen
 
         pos += 1
