@@ -55,22 +55,21 @@ def parse(ps1, warnings=False):
                     match = validVar('\\' + ps1[_parserPos])
                     if match is not False:
                         msg = ('Did you mean "{0}"'
-                              '({1})?'.format(match['match'], match['type']))
-                        logIssue(1, msg, False)
+                               '({1})?'.format(match['match'], match['type']))
+                        logIssue(0, msg, False)
 
                 _parserPos += 1
     except SyntaxError:
         return False
     else:
-        print('Success: "{0}" is a valid PS1.'.format(ps1))
+        print('Success: "{0}" is a valid PS1!'.format(ps1))
         return True 
 
-def logIssue(deltaPos, msg, err=True):
-    # Minus 1 to leave room for caret
-    deltaPos += _parserPos - 1
+def logIssue(pos, msg, err=True):
+    pos += _parserPos
 
     print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
-                                       _fullPS1, '-' * deltaPos))
+                                       _fullPS1, '-' * pos))
     if err:
         raise SyntaxError()
     
@@ -87,17 +86,17 @@ def validateVar(ps1):
     if match is not False:
         return len(match['match']) 
     else:
-        logIssue(2, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
+        logIssue(0, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
-def validateColor(ps1):
+def validateColor(ps1, pos):
     colorStr = re.match(_colorRegex, ps1)
     if colorStr:
         return colorStr.group(0)
     else:
         for i, chr in enumerate(ps1):
             if re.match(colorRegexTpl[i], chr) is None:
-                logIssue(i + 4, 'Color code is not properly formatted. '
-                                'Mising "{0}".'.format(colorRegexTpl[i]))
+                logIssue(pos, 'Invalid color code. Mising "{0}" '
+                              'in sequence "\e[x;ym".'.format(colorRegexTpl[i]))
 
 def validateEscape(ps1):
     escapeSeqLen = 2 # \]
@@ -105,19 +104,19 @@ def validateEscape(ps1):
     l = len(ps1)
 
     while pos < l:
-        print(ps1[pos])
         if ps1[pos:pos + 2] == r'\e':
-            colorStr = validateColor(ps1[pos:]) 
+            colorStr = validateColor(ps1[pos:], pos) 
             pos += len(colorStr)
         else:
             match = re.match(r'[\'"].*[\'"]', ps1[pos:])
             if match is not None:
                 pos += len(match.group(0))
             else:
-                logIssue(pos + 1, 'Meaningless character(s) inside'
-                                  'escape sequence.') 
+                logIssue(pos, 'Meaningless "{0}" character inside '
+                              'escape sequence.'.format(ps1[pos])) 
+
         if ps1[pos:pos + 2] == r'\]':
-            # Return the length of the escaped expression
+            # Return the entire length of the escaped expression
             return pos + escapeSeqLen
 
         pos += 1
