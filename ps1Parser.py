@@ -104,7 +104,7 @@ def validateEscape(ps1):
     l = len(ps1)
 
     while pos < l:
-        if ps1[pos:pos + 2] == r'\e':
+        if re.match(r'\\(e|033)', ps1[pos:pos + 4]) is not None:
             colorStr = validateColor(ps1[pos:], pos) 
             pos += len(colorStr)
         else:
