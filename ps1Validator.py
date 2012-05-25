@@ -32,91 +32,90 @@ promptVars = {
     'strftime':                     r'\\D\{%[a-zA-z\+%]+\}'
 }
 
-class PS1Parser():
-    def __init__(self):
-        self.colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
+_fullPS1 = None
+_parserPos = 0
+_colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
 
-    def parse(self, ps1): 
-        self.ps1 = ps1
-        self._pos = 0
-        l = len(ps1)
+def parse(ps1): 
+    global _fullPS1, _parserPos
+    _fullPS1 = ps1
+    _parserPos = 0
+    l = len(ps1)
 
-        try:
-            while self._pos < l:
-                if ps1[self._pos] == '\\':
-                    if ps1[self._pos + 1] == r'[':
-                        self._pos += self.validateEscape(ps1[self._pos:])
-                    else:
-                        self._pos += self.validateVar(ps1[self._pos:])        
+    try:
+        while _parserPos < l:
+            if ps1[_parserPos] == '\\':
+                if ps1[_parserPos + 1] == r'[':
+                    _parserPos += validateEscape(ps1[_parserPos:])
                 else:
-                    match = self.validVar('\\' + ps1[self._pos])
-                    if match is not False:
-                        self.logIssue(1,
-                                 'Did you mean "{0}" ({1})?'.format(match['match'], 
-                                                                    match['type']), 
-                                 False)
-                    self._pos += 1
-        except SyntaxError:
-            print("Exiting...")
-        else:
-            print('Success: "{0}" is a valid PS1.'.format(ps1))
-
-    def logIssue(self, deltaPos, msg, err=True):
-        # Minus 1 to leave room for caret
-        deltaPos += self._pos - 1
-
-        print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
-                                           self.ps1, '-' * deltaPos))
-        if err:
-            raise SyntaxError()
-        
-    def validVar(self, testVar):
-        for key in promptVars:
-            match = re.match(promptVars[key], testVar)
-            if match is not None:
-                return {'match': match.group(0), 'type': key}
-
+                    _parserPos += validateVar(ps1[_parserPos:])        
+            else:
+                match = validVar('\\' + ps1[_parserPos])
+                if match is not False:
+                    logIssue(1,
+                             'Did you mean "{0}" ({1})?'.format(match['match'], 
+                                                                match['type']), 
+                             False)
+                _parserPos += 1
+    except SyntaxError:
         return False
+    else:
+        print('Success: "{0}" is a valid PS1.'.format(ps1))
+        return True 
 
-    def validateVar(self, ps1):
-        match = self.validVar(ps1)
-        if match is not False:
-            return len(match['match']) 
-        else:
-            self.logIssue(2, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
+def logIssue(deltaPos, msg, err=True):
+    # Minus 1 to leave room for caret
+    deltaPos += _parserPos - 1
 
-    def validateColor(self, ps1):
-        colorStr = re.match(self.colorRegex, ps1)
-        if colorStr:
-            return colorStr.group(0)
-        else:
-            self.logIssue(3, 'Color code is not properly formatted.')
+    print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
+                                       _fullPS1, '-' * deltaPos))
+    if err:
+        raise SyntaxError()
+    
+def validVar(testVar):
+    for key in promptVars:
+        match = re.match(promptVars[key], testVar)
+        if match is not None:
+            return {'match': match.group(0), 'type': key}
 
-    def validateEscape(self, ps1):
-        pos = 0
-        l = len(ps1)
+    return False
 
-        while pos < l:
-            if ps1[pos:pos + 2] == r'\e':
-                colorStr = self.validateColor(ps1[pos:]) 
-                pos += len(colorStr)
-            if ps1[pos:pos + 2] == r'\]':
-                # Return the length of the escaped expression
-                return pos + 2
+def validateVar(ps1):
+    match = validVar(ps1)
+    if match is not False:
+        return len(match['match']) 
+    else:
+        logIssue(2, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
-            pos += 1
-        
-        self.logIssue(0, 'Escape sequence was never closed.')
-        
+def validateColor(ps1):
+    colorStr = re.match(_colorRegex, ps1)
+    if colorStr:
+        return colorStr.group(0)
+    else:
+        logIssue(3, 'Color code is not properly formatted.')
+
+def validateEscape(ps1):
+    pos = 0
+    l = len(ps1)
+
+    while pos < l:
+        if ps1[pos:pos + 2] == r'\e':
+            colorStr = validateColor(ps1[pos:]) 
+            pos += len(colorStr)
+        if ps1[pos:pos + 2] == r'\]':
+            # Return the length of the escaped expression
+            return pos + 2
+
+        pos += 1
+    
+    logIssue(0, 'Escape sequence was never closed.')
 
 def main():
     import os
 
-    parser = PS1Parser()
-
     validPS1s = open("validPS1s.txt")
     for line in validPS1s:
         if line[0] != '#' and line[0] != '\n':
-            parser.parse(line.strip())
+            parse(line.strip())
 
 if __name__ == "__main__": main()
