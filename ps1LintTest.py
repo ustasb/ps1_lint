@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import ps1Parser
+import ps1Lint
 
 tests = 0
 testsPassed = 0
@@ -13,7 +13,7 @@ def test(ps1, validPS1):
     print('{0}.'.format(tests))
     
     ps1 = ps1.strip()
-    isValid = ps1Parser.parse(ps1[1:])
+    isValid = ps1Lint.parse(ps1[1:])
 
     if isValid is validPS1:
         testsPassed += 1

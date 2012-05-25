@@ -1,4 +1,7 @@
-# -- Valid PS1s --
+# TEST PS1s
+# PS1s prefixed with "+" are valid and "-" are invalid.
+
+# ----- VALID PS1s -----
 
 # http://www.gnu.org/software/bash/manual/bashref.html
 +\s-\v\$
@@ -46,7 +49,7 @@
 +\[\e]0;Welcome to ArchLinux\a\]\$>>
 +[\[\033[1;31m\]\u@\h \[\033[1;34m\]$(/usr/bin/tty | /bin/sed -e '\''s:/dev/::'\'')\[\033[0m\]] \[\033[0m\]
 
-# -- Invalid PS1s --
+# ----- INVALID PS1s -----
 -\e[0;00m\]\u>
 -[\h\]\
 -\e\z
