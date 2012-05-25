@@ -36,7 +36,7 @@ _fullPS1 = None
 _parserPos = 0
 _colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
 
-def parse(ps1): 
+def parse(ps1, warnings=False): 
     global _fullPS1, _parserPos
     _fullPS1 = ps1
     _parserPos = 0
@@ -50,12 +50,13 @@ def parse(ps1):
                 else:
                     _parserPos += validateVar(ps1[_parserPos:])        
             else:
-                match = validVar('\\' + ps1[_parserPos])
-                if match is not False:
-                    logIssue(1,
-                             'Did you mean "{0}" ({1})?'.format(match['match'], 
-                                                                match['type']), 
-                             False)
+                if warnings is True:
+                    match = validVar('\\' + ps1[_parserPos])
+                    if match is not False:
+                        msg = 'Did you mean "{0}" ({1})?'.format(match['match'], 
+                                                                 match['type'])
+                        logIssue(1, msg, False)
+
                 _parserPos += 1
     except SyntaxError:
         return False
