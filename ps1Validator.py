@@ -2,8 +2,6 @@
 
 import re
 
-colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
-
 # Prompt variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
@@ -35,8 +33,9 @@ promptVars = {
 }
 
 class PS1Parser():
-    _singletonInst = None
-    
+    def __init__(self):
+        self.colorRegex = re.compile(r'\\(e|033)\[\d{,2};?\d{,3}m')
+
     def parse(self, ps1): 
         self.ps1 = ps1
         self._pos = 0
@@ -87,11 +86,11 @@ class PS1Parser():
             self.logIssue(2, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
     def validateColor(self, ps1):
-        colorStr = re.match(colorRegex, ps1)
+        colorStr = re.match(self.colorRegex, ps1)
         if colorStr:
             return colorStr.group(0)
         else:
-            self.logIssue(0, 'Color code is not properly formatted.')
+            self.logIssue(3, 'Color code is not properly formatted.')
 
     def validateEscape(self, ps1):
         pos = 0
@@ -114,13 +113,10 @@ def main():
     import os
 
     parser = PS1Parser()
-    test = r'\[\e[0;30mryuhx\]\ztj: '
-    parser.parse(test)
 
-    """ 
     validPS1s = open("validPS1s.txt")
     for line in validPS1s:
         if line[0] != '#' and line[0] != '\n':
-            parsePS1(line.strip())
-    """
+            parser.parse(line.strip())
+
 if __name__ == "__main__": main()
