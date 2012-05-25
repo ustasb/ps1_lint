@@ -2,7 +2,7 @@
 
 import re
 
-colorRegexTpl = (r'\\', r'(e|033)', r'\[', r'\d{,2}', r';?', r'\d{,3}', r'm')
+colorRegexTpl = (r'\[', r'\d{,2}', r';?', r'\d{,3}', r'm')
 # Prompt variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = {
@@ -36,6 +36,8 @@ promptVars = {
 _fullPS1 = None
 _parserPos = 0
 _colorRegex = re.compile(''.join(colorRegexTpl))
+# http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
+_cursorMvmentRegex = re.compile(r'\[\d?\d?;?\d?\d?[HfABCDJKsu]')
 
 def parse(ps1, warnings=False): 
     global _fullPS1, _parserPos
@@ -89,6 +91,7 @@ def validateVar(ps1):
         logIssue(0, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
 
 def validateColor(ps1, pos=0):
+    print(ps1)
     colorStr = re.match(_colorRegex, ps1)
     if colorStr:
         return colorStr.group(0)
@@ -104,9 +107,16 @@ def validateEscape(ps1):
     l = len(ps1)
 
     while pos < l:
-        if re.match(r'\\(e|033)', ps1[pos:pos + 4]) is not None:
-            colorStr = validateColor(ps1[pos:], pos) 
-            pos += len(colorStr)
+        colorCodeOpen = re.match(r'\\(e|033)', ps1[pos:pos + 4]) 
+        if colorCodeOpen is not None:
+            pos += len(colorCodeOpen.group(0))
+
+            cursorMvmentMatch = re.match(_cursorMvmentRegex, ps1[pos:])
+            if cursorMvmentMatch is not None:
+                pos += len(cursorMvmentMatch.group(0))
+            else:
+                colorStr = validateColor(ps1[pos:], pos) 
+                pos += len(colorStr)
         else:
             match = re.match(r'[\'"].*[\'"]', ps1[pos:])
             if match is not None:

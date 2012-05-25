@@ -11,8 +11,8 @@
 +\[\033[1;34m\][\$(date +%H%M)][\u@\h:\w]$\[\033[0m\]
 
 # Cursor movement: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
-+\[\033[<N>C\]
-+\[\033[<L>;<C>H\]
++\[\033[5C\]
++\[\033[4;7H\]
 
 # http://www.gentoo.org/doc/en/articles/prompt-magic.xml?style=printable
 +This is my super prompt >
