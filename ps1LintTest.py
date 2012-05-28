@@ -6,11 +6,11 @@ tests = 0
 testsPassed = 0
 testPS1s = open('testPS1s.txt')
 
-def test(ps1, validPS1):
+def test(lineNum, ps1, validPS1):
     global tests, testsPassed 
     
     tests += 1
-    print('{0}.'.format(tests))
+    print('{0}. Line {1}'.format(tests, lineNum))
     
     ps1 = ps1.strip()
     isValid = ps1Lint.parse(ps1[1:])
@@ -24,11 +24,13 @@ def test(ps1, validPS1):
     print('{0}: This PS1 is{1}valid.\n'
           .format(result, ' ' if validPS1 is True else ' NOT '))
 
-for ps1 in testPS1s:
+for lineNum, ps1 in enumerate(testPS1s):
     if ps1[0] == '+': 
-        test(ps1, True)
+        test(lineNum, ps1, True)
     elif ps1[0] == '-':
-        test(ps1, False)
+        test(lineNum, ps1, False)
+
+testPS1s.close()
 
 print('{0}\n{1} tests passed out of {2}.\n{0}'.format('-' * 40, 
                                                       testsPassed, tests))

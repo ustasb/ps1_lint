@@ -2,44 +2,42 @@
 
 import re
 
-colorRegexTpl = (r'\[', r'\d{,2}', r';?', r'\d{,3}', r'm')
-# Prompt variables from: 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-promptVars = {
-    'bell':                         r'\\a',
-    'date':                         r'\\d',
-    'escape':                       r'\\e',
-    'short hostname':               r'\\h',
-    'full hostname':                r'\\H',
-    'jobs':                         r'\\j',
-    'device name':                  r'\\l',
-    'newline':                      r'\\n',
-    'carriage return':              r'\\r',
-    'shell name':                   r'\\s',
-    'time 24HH:MM:SS':              r'\\t',
-    'time 12HH:MM:SS':              r'\\T',
-    'time 12AM/PM':                 r'\\@',
-    'time 24HH:MM':                 r'\\A',
-    'username':                     r'\\u',
-    'bash version':                 r'\\v',
-    'bash release':                 r'\\V',
-    'current working directory':    r'\\w',
-    'basename $PWD':                r'\\W',
-    'history number':               r'\\!',
-    'command number':               r'\\#',
-    'effective UID':                r'\\\$',
-    'backslash':                    r'\\\\',
-    'ASCII code':                   r'\d{3}',
-    'strftime':                     r'\\D\{%[a-zA-z\+%]+\}'
-}
+promptVars = (
+    r'a', #bell
+    r'd', #date
+    r'e', #escape
+    r'h', #short hostname
+    r'H', #full hostname
+    r'j', #jobs
+    r'l', #device name
+    r'n', #newline
+    r'r', #carriage return
+    r's', #shell name
+    r't', #time 24HH:MM:SS
+    r'T', #time 12HH:MM:SS
+    r'@', #time 12AM/PM
+    r'A', #time 24HH:MM
+    r'u', #username
+    r'v', #bash version
+    r'V', #bash release
+    r'w', #current working directory
+    r'W', #basename $PWD
+    r'!', #history number
+    r'#', #command number
+    r'\$', #effective UID
+    r'\\', #backslash
+    r'd{3}', #ASCII code
+    r'D\{%[a-zA-z\+%]+\}' #strftime
+)
 
 _fullPS1 = None
 _parserPos = 0
-_colorRegex = re.compile(''.join(colorRegexTpl))
+_colorRegex = re.compile(r'\[(\d;)?(0|([349][0-7])?|10[0-7])m')
 # Cursor movement: http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
 _cursorMvmentRegex = re.compile(r'\[\d?\d?;?\d?\d?[HfABCDJKsu]')
 
-def parse(ps1, warnings=False): 
+def parse(ps1): 
     global _fullPS1, _parserPos
     _fullPS1 = ps1
     _parserPos = 0
@@ -48,87 +46,74 @@ def parse(ps1, warnings=False):
     try:
         while _parserPos < l:
             if ps1[_parserPos] == '\\':
-                if ps1[_parserPos + 1] == r'[':
+                
+                _parserPos += 1
+
+                if ps1[_parserPos] == '[':
+                    _parserPos += 1
                     _parserPos += validateEscape(ps1[_parserPos:])
                 else:
                     _parserPos += validateVar(ps1[_parserPos:])        
-            else:
-                if warnings is True:
-                    match = validVar('\\' + ps1[_parserPos])
-                    if match is not False:
-                        msg = ('Did you mean "{0}"'
-                               '({1})?'.format(match['match'], match['type']))
-                        logIssue(0, msg, False)
+                continue
 
-                _parserPos += 1
+            _parserPos += 1
     except SyntaxError:
         return False
     else:
         print('Success: "{0}" is a valid PS1!'.format(ps1))
         return True 
 
-def logIssue(pos, msg, err=True):
+def logError(pos, msg):
     pos += _parserPos
 
-    print('{0}: {1}\n{2}\n{3}^'.format('Error' if err else 'Warning', msg,
-                                       _fullPS1, '-' * pos))
-    if err:
-        raise SyntaxError()
-    
-def validVar(testVar):
-    for key in promptVars:
-        match = re.match(promptVars[key], testVar)
-        if match is not None:
-            return {'match': match.group(0), 'type': key}
+    print('Error: {0}\n{1}\n{2}^'.format(msg, _fullPS1, '-' * pos))
 
-    return False
+    raise SyntaxError()
 
 def validateVar(ps1):
-    match = validVar(ps1)
-    if match is not False:
-        return len(match['match']) 
-    else:
-        logIssue(0, '"{0}" is an invalid prompt variable.'.format(ps1[:2]))
+    for var in promptVars:
+        match = re.match(var, ps1)
+        if match:
+            return len(match.group(0))
+    
+    logError(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
 
 def validateColor(ps1, pos=0):
     colorStr = re.match(_colorRegex, ps1)
     if colorStr:
         return colorStr.group(0)
     else:
-        for i, chr in enumerate(ps1):
-            if re.match(colorRegexTpl[i], chr) is None:
-                logIssue(pos, 'Invalid color code. Mising "{0}" in sequence '
-                              '"\e[x;ym".'.format(colorRegexTpl[i]))
+        logError(pos - 1, 'Invalid color code. See -c for valid colors.')
 
 def validateEscape(ps1):
-    escapeSeqLen = 2 # \]
-    pos = escapeSeqLen
+    pos = 0
     l = len(ps1)
 
     while pos < l:
         colorCodeOpen = re.match(r'\\(e|033)', ps1[pos:pos + 4]) 
-        if colorCodeOpen is not None:
+        if colorCodeOpen:
             pos += len(colorCodeOpen.group(0))
 
             cursorMvmentMatch = re.match(_cursorMvmentRegex, ps1[pos:])
-            if cursorMvmentMatch is not None:
+            if cursorMvmentMatch:
                 pos += len(cursorMvmentMatch.group(0))
-            # If there's no match, assume the author intended a color code.
             else:
+                # If there's no match, assume the author intended a color code.
                 colorStr = validateColor(ps1[pos:], pos) 
                 pos += len(colorStr)
         else:
+            # Anything inside quotes is okay.
             match = re.match(r'[\'"].*[\'"]', ps1[pos:])
-            if match is not None:
+            if match:
                 pos += len(match.group(0))
             else:
-                logIssue(pos, 'Meaningless "{0}" character inside '
+                logError(pos, 'Meaningless "{0}" character inside '
                               'escape sequence.'.format(ps1[pos])) 
 
         if ps1[pos:pos + 2] == r'\]':
             # Return the entire length of the escaped expression.
-            return pos + escapeSeqLen
+            return pos + 2
 
         pos += 1
     
-    logIssue(0, 'Escape sequence was never closed.')
+    logError(0, 'Escape sequence was never closed.')

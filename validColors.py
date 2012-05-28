@@ -1,5 +1,6 @@
 # Colors listing from: https://wiki.archlinux.org/index.php/Color_Bash_Prompt
 validColors = {
+    # http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
     'colorOff':     r'\e[0m',
 
     # Normal
@@ -68,7 +69,7 @@ validColors = {
     'BgIGreen':     r'\e[0;102m',
     'BgIYellow':    r'\e[0;103m',
     'BgIBlue':      r'\e[0;104m',
-    'BgIPurple':    r'\e[10;95m',
+    'BgIPurple':    r'\e[0;105m',
     'BgICyan':      r'\e[0;106m',
     'BgIWhite':     r'\e[0;107m' 
 }
