@@ -25,9 +25,9 @@ promptVars = (
     'W', # basename $PWD
     '\!', # history number
     '#', # command number
-    r'\$(?!\()', # effective UID
     r'\\', # backslash
-    r'd{3}', # ASCII code
+    r'\$(?!\()', # effective UID
+    r'[01][0-7][0-7]', # ASCII octal code
     r'D\{%[a-zA-z\+%]+\}' # strftime
 )
 
@@ -45,6 +45,15 @@ def parse(ps1):
 
     try:
         while _parserPos < l:
+
+            # Commands inside `` or $() are ignored
+            if re.match(r'`|\\\$\(', ps1[_parserPos:]):
+                commandSeq = re.match(r'`[^`]*`|\\\$\([^)]*\)', ps1[_parserPos:])
+                if commandSeq:
+                    _parserPos += len(commandSeq.group(0))
+                else:
+                    logError(0, 'Command sequence not closed.')
+
             if ps1[_parserPos] == '\\':
                 
                 _parserPos += 1
@@ -52,14 +61,6 @@ def parse(ps1):
                 if ps1[_parserPos] == '[':
                     _parserPos += 1
                     _parserPos += validateEscape(ps1[_parserPos:])
-
-                # Commands inside `` or $() are ignored
-                elif re.match(r'`|\$\(', ps1[_parserPos: _parserPos + 2]):
-                    commandSeq = re.match(r'`[^`]*`|\$\([^)]*\)', ps1[_parserPos:])
-                    if commandSeq:
-                        _parserPos += len(commandSeq.group(0))
-                    else:
-                        logError(0, 'Command sequence not closed.')
                 else:
                     _parserPos += validateVar(ps1[_parserPos:])        
                 continue
