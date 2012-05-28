@@ -4,38 +4,38 @@ import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 promptVars = (
-    r'a', #bell
-    r'd', #date
-    r'e', #escape
-    r'h', #short hostname
-    r'H', #full hostname
-    r'j', #jobs
-    r'l', #device name
-    r'n', #newline
-    r'r', #carriage return
-    r's', #shell name
-    r't', #time 24HH:MM:SS
-    r'T', #time 12HH:MM:SS
-    r'@', #time 12AM/PM
-    r'A', #time 24HH:MM
-    r'u', #username
-    r'v', #bash version
-    r'V', #bash release
-    r'w', #current working directory
-    r'W', #basename $PWD
-    r'!', #history number
-    r'#', #command number
-    r'\$', #effective UID
-    r'\\', #backslash
-    r'd{3}', #ASCII code
-    r'D\{%[a-zA-z\+%]+\}' #strftime
+    r'a', # bell
+    r'd', # date
+    r'e', # escape
+    r'h', # short hostname
+    r'H', # full hostname
+    r'j', # jobs
+    r'l', # device name
+    r'n', # newline
+    r'r', # carriage return
+    r's', # shell name
+    r't', # time 24HH:MM:SS
+    r'T', # time 12HH:MM:SS
+    r'@', # time 12AM/PM
+    r'A', # time 24HH:MM
+    r'u', # username
+    r'v', # bash version
+    r'V', # bash release
+    r'w', # current working directory
+    r'W', # basename $PWD
+    r'!', # history number
+    r'#', # command number
+    r'\$(?!\()', # effective UID
+    r'\\', # backslash
+    r'd{3}', # ASCII code
+    r'D\{%[a-zA-z\+%]+\}' # strftime
 )
 
 _fullPS1 = None
 _parserPos = 0
-_colorRegex = re.compile(r'\[(\d;)?(0|([349][0-7])?|10[0-7])m')
-# Cursor movement: http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
-_cursorMvmentRegex = re.compile(r'\[\d?\d?;?\d?\d?[HfABCDJKsu]')
+# CSI: Control Sequence Introducer
+_cursorMvmentCSIRegex = re.compile(r'^(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
+_colorCSIRegex = re.compile(r'^(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
 
 def parse(ps1): 
     global _fullPS1, _parserPos
@@ -52,6 +52,14 @@ def parse(ps1):
                 if ps1[_parserPos] == '[':
                     _parserPos += 1
                     _parserPos += validateEscape(ps1[_parserPos:])
+
+                # Commands inside `` or $() are ignored
+                elif re.match(r'`|\$\(', ps1[_parserPos: _parserPos + 2]):
+                    commandSeq = re.match(r'`[^`]*`|\$\([^)]*\)', ps1[_parserPos:])
+                    if commandSeq:
+                        _parserPos += len(commandSeq.group(0))
+                    else:
+                        logError(0, 'Command sequence not closed.')
                 else:
                     _parserPos += validateVar(ps1[_parserPos:])        
                 continue
@@ -79,28 +87,31 @@ def validateVar(ps1):
     logError(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
 
 def validateColor(ps1, pos=0):
-    colorStr = re.match(_colorRegex, ps1)
-    if colorStr:
-        return colorStr.group(0)
+    colorCSI = re.match(_colorCSIRegex, ps1)
+    if colorCSI:
+        return colorCSI.group(0)
     else:
         logError(pos - 1, 'Invalid color code. See -c for valid colors.')
 
 def validateEscape(ps1):
     pos = 0
     l = len(ps1)
-
+    
     while pos < l:
-        colorCodeOpen = re.match(r'\\(e|033)', ps1[pos:pos + 4]) 
-        if colorCodeOpen:
-            pos += len(colorCodeOpen.group(0))
+        escSeqBegin = re.match(r'\\(e|033)\[', ps1[pos:pos + 5]) 
+        if escSeqBegin:
+            pos += len(escSeqBegin.group(0))
 
-            cursorMvmentMatch = re.match(_cursorMvmentRegex, ps1[pos:])
-            if cursorMvmentMatch:
-                pos += len(cursorMvmentMatch.group(0))
+            colorCSI = re.match(_colorCSIRegex, ps1[pos:])
+            if colorCSI:
+                pos += len(colorCSI.group(0))
             else:
-                # If there's no match, assume the author intended a color code.
-                colorStr = validateColor(ps1[pos:], pos) 
-                pos += len(colorStr)
+                cursorMvmentCSI = re.match(_cursorMvmentCSIRegex, ps1[pos:])
+                if cursorMvmentCSI:
+                    pos += len(cursorMvmentCSI.group(0))
+                else:
+                    logError(pos, 'Invalid color or cursor movement sequence.')
+
         else:
             # Anything inside quotes is okay.
             match = re.match(r'[\'"].*[\'"]', ps1[pos:])
@@ -117,3 +128,10 @@ def validateEscape(ps1):
         pos += 1
     
     logError(0, 'Escape sequence was never closed.')
+
+def main():
+    import sys
+
+    parse(r'\[\033[44m\]')
+
+if __name__ == '__main__': main()

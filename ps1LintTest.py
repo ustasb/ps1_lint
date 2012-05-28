@@ -2,6 +2,7 @@
 
 import ps1Lint
 
+lineNum = 0
 tests = 0
 testsPassed = 0
 testPS1s = open('testPS1s.txt')
@@ -24,7 +25,9 @@ def test(lineNum, ps1, validPS1):
     print('{0}: This PS1 is{1}valid.\n'
           .format(result, ' ' if validPS1 is True else ' NOT '))
 
-for lineNum, ps1 in enumerate(testPS1s):
+for ps1 in testPS1s:
+    lineNum += 1
+    
     if ps1[0] == '+': 
         test(lineNum, ps1, True)
     elif ps1[0] == '-':
