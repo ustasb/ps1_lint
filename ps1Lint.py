@@ -47,8 +47,8 @@ def parse(ps1):
         while _parserPos < l:
 
             # Commands inside `` or \$() are ignored
-            if re.match(r'`|\\\$\(', ps1[_parserPos:]):
-                commandSeq = re.match(r'^`[^`]*`|\\\$\([^)]*\)', ps1[_parserPos:])
+            if re.match(r'`|\\\$\(|\$\{', ps1[_parserPos:]):
+                commandSeq = re.match(r'^`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}', ps1[_parserPos:])
                 if commandSeq:
                     _parserPos += len(commandSeq.group(0))
                 else:
@@ -115,8 +115,8 @@ def validateEscape(ps1):
                     logError(pos, 'Invalid color or cursor movement sequence.')
 
         else:
-            # Anything inside quotes is okay.
-            match = re.match(r'[\'"].*[\'"]', ps1[pos:])
+            # Anything inside quotes or ${} is okay.
+            match = re.match(r'([\'"])[^\1]*\1|\$\{[^}]*\}', ps1[pos:])
             if match:
                 pos += len(match.group(0))
             else:
