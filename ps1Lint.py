@@ -27,13 +27,13 @@ promptVars = (
     '#', # command number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
-    r'[01][0-7][0-7]', # ASCII octal code
-    r'D\{%[a-zA-z\+%]+\}' # strftime
+    r'[0231][0-7][0-7]', # ASCII octal code
+    r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
 _fullPS1 = None
 _parserPos = 0
-# CSI: Control Sequence Introducer
+# Control Sequence Introducer (CSI)
 _cursorMvmentCSIRegex = re.compile(r'^(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 _colorCSIRegex = re.compile(r'^(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
 
@@ -46,13 +46,14 @@ def parse(ps1):
     try:
         while _parserPos < l:
 
-            # Commands inside `` or $() are ignored
+            # Commands inside `` or \$() are ignored
             if re.match(r'`|\\\$\(', ps1[_parserPos:]):
-                commandSeq = re.match(r'`[^`]*`|\\\$\([^)]*\)', ps1[_parserPos:])
+                commandSeq = re.match(r'^`[^`]*`|\\\$\([^)]*\)', ps1[_parserPos:])
                 if commandSeq:
                     _parserPos += len(commandSeq.group(0))
                 else:
                     logError(0, 'Command sequence not closed.')
+                continue
 
             if ps1[_parserPos] == '\\':
                 
