@@ -33,7 +33,6 @@ _promptVars = (
 
 _validNonPrintRegex = re.compile(r'([\'`"])[^\1]*\1|\$\{[^}]*\}')
 _commandStrRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
-# Control Sequence Introducers (CSI)
 _cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 _colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
 _escSeqBeginRegex = re.compile(r'\\(e|033)\[')
@@ -138,7 +137,6 @@ def validateNonPrintSeq(ps1):
 
 def main():
     import sys
-
-    parse(r'\[\033[44m\]')
+    parse(sys.argv[1])
 
 if __name__ == '__main__': main()
