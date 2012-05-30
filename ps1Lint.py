@@ -60,11 +60,13 @@ def parse(ps1):
                     raise PS1Error(0, 'Command sequence not closed.')
                 continue
             
-            if re.match(_escSeqBeginRegex, ps1[parserPos:]):
-                raise PS1Error(0, 'Color code encountered without '
-                                  'enclosing \[ ... \].')
+            elif re.match(_escSeqBeginRegex, ps1[parserPos:]):
+                raise PS1Error(0, 'Color or cursor sequence encountered '
+                                  'without being escaped by \[ ... \].')
 
-            if re.match(r'\\(?!\s|$)', ps1[parserPos:]):
+            # Don't match backslashes followed by white space or at the end
+            # of the line.
+            elif re.match(r'\\(?!\s|$)', ps1[parserPos:]):
                 
                 parserPos += 1
 
