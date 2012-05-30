@@ -10,6 +10,8 @@ PS1s prefixed with "+" are valid and "-" are invalid.
 +\[\033[44;32;1m\]\!@\#\u>
 +\044 
 +\065
++\u \  \h
++\u@\h\
 +\033
 +\123
 +\167
@@ -145,4 +147,3 @@ https://bbs.archlinux.org/viewtopic.php?id=50885
 j\[\033[1m\][ \[\033[1;31m\]\u@\h \[\033[0m\]\[\033[1m]] \[\033[1;32m\]\w\[\033[0m\]\n\[\033[1;31m\]$\[\033[0m\]>
 -\u@\h:\/\w [$?]\$
 -\u@\h \W \`if [[ \$? = "0" ]]; then echo '=)'; else echo '=(' ; fi` \$
-

@@ -62,9 +62,9 @@ def parse(ps1):
             
             if re.match(_escSeqBeginRegex, ps1[parserPos:]):
                 raise PS1Error(0, 'Color code encountered without '
-                                  'enclosing \[ .. \].')
+                                  'enclosing \[ ... \].')
 
-            if ps1[parserPos] == '\\':
+            if re.match(r'\\(?!\s|$)', ps1[parserPos:]):
                 
                 parserPos += 1
 
@@ -104,12 +104,18 @@ def validateNonPrintSeq(ps1):
             colorCSI = re.match(_colorCSIRegex, ps1[pos:])
             if colorCSI:
                 pos += len(colorCSI.group(0))
+
+                if ps1[pos:pos + 2] != r'\]':
+                    raise PS1Error(pos, 'Expecting escape sequence to close '
+                                        'after declared color code but it '
+                                        'didn\'t.')
             else:
                 cursorMvmentCSI = re.match(_cursorMvmentCSIRegex, ps1[pos:])
                 if cursorMvmentCSI:
                     pos += len(cursorMvmentCSI.group(0))
                 else:
-                    raise PS1Error(pos, 'Invalid color or cursor movement sequence.')
+                    raise PS1Error(pos, 'Invalid color or cursor movement '
+                                        'sequence.')
 
         else:
             # Anything inside quotes or ${} is okay.
