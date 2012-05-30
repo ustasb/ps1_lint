@@ -3,7 +3,7 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-promptVars = (
+_promptVars = (
     'a', # bell
     'd', # date
     'e', # escape
@@ -31,10 +31,13 @@ promptVars = (
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
-# Control Sequence Introducer (CSI)
+_validNonPrintRegex = re.compile(r'([\'"])[^\1]*\1|\$\{[^}]*\}')
+_commandStrRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
+# Control Sequence Introducers (CSI)
 _cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 _colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
 
+# Custom exception class
 class PS1Error(SyntaxError):
     def __init__(self, pos, msg):
         self.pos = pos
@@ -49,8 +52,7 @@ def parse(ps1):
 
             # Anything inside ``, ${} or \$() is ignored
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
-                commandSeq = re.match(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}',
-                                      ps1[parserPos:])
+                commandSeq = re.match(_commandStrRegex, ps1[parserPos:])
                 if commandSeq:
                     parserPos += len(commandSeq.group(0))
                 else:
@@ -80,7 +82,7 @@ def parse(ps1):
         return True 
 
 def validateVar(ps1):
-    for var in promptVars:
+    for var in _promptVars:
         match = re.match(var, ps1)
         if match:
             return len(match.group(0))
@@ -108,12 +110,12 @@ def validateNonPrintSeq(ps1):
 
         else:
             # Anything inside quotes or ${} is okay.
-            match = re.match(r'([\'"])[^\1]*\1|\$\{[^}]*\}', ps1[pos:])
+            match = re.match(_validNonPrintRegex, ps1[pos:])
             if match:
                 pos += len(match.group(0))
             else:
                 raise PS1Error(pos, 'Meaningless "{0}" character inside '
-                              'escape sequence.'.format(ps1[pos])) 
+                                    'escape sequence.'.format(ps1[pos])) 
 
         if ps1[pos:pos + 2] == r'\]':
             # Return the entire length of the escaped expression.
