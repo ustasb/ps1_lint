@@ -1,0 +1,61 @@
+--Colors--
+
+A color sequence affects everything after its declaration.
+It must be escaped with \[ ... \] so that lines wrap properly.
+
+Below are valid color sequences:
+\[\e[0m\] (a text reset--the same as \[\033[0m\])
+\[\e[1;43m\]
+\[\e[32m\]
+\[\e[4;32;44m\]
+\[\e[44;0;34m\]
+\[\e[34;4m\]
+
+Color Codes [1]
+
+Text attributes
+0 All attributes off
+1 Bold on
+4 Underscore
+5 Blink on
+7 Reverse video on
+8 Concealed on
+ 
+Foreground colors
+30 Black
+31 Red
+32 Green
+33 Yellow
+34 Blue
+35 Magenta
+36 Cyan
+37 White
+ 
+Background colors
+40 Black
+41 Red
+42 Green
+43 Yellow
+44 Blue
+45 Magenta
+46 Cyan
+47 White
+
+--Cursor Movement [1]--
+
+\[\e[<Line>;<Column>H\]         Cursor Position
+\[\e[<Line>;<Column>f\]        
+\[\e[<Value>A\]                 Cursor Up
+\[\e[<Value>B\]                 Cursor Down
+\[\e[<Value>C\]                 Cursor Forward
+\[\e[<Value>D\]                 Cursor Backward
+\[\e[s\]                        Save Cursor Position
+\[\e[u\]                        Restore Cursor Position
+\[\e[2J\]                       Erase Display
+\[\e[K\]                        Erase Line
+\[\e[<Value>;...;<Value>m\]     Set Graphics Mode
+
+--References--
+
+[1] http://ascii-table.com/ansi-escape-sequences.php
+
