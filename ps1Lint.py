@@ -23,7 +23,7 @@ _promptVars = (
     'V', # bash release
     'w', # current working directory
     'W', # basename $PWD
-    '\!', # history number
+    '!', # history number
     '#', # command number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
@@ -31,11 +31,12 @@ _promptVars = (
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
-_validNonPrintRegex = re.compile(r'([\'"])[^\1]*\1|\$\{[^}]*\}')
+_validNonPrintRegex = re.compile(r'([\'`"])[^\1]*\1|\$\{[^}]*\}')
 _commandStrRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
 # Control Sequence Introducers (CSI)
 _cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 _colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
+_escSeqBeginRegex = re.compile(r'\\(e|033)\[')
 
 # Custom exception class
 class PS1Error(SyntaxError):
@@ -45,12 +46,12 @@ class PS1Error(SyntaxError):
 
 def parse(ps1): 
     parserPos = 0
-    l = len(ps1)
+    ps1Len = len(ps1)
 
     try:
-        while parserPos < l:
+        while parserPos < ps1Len:
 
-            # Anything inside ``, ${} or \$() is ignored
+            # Anything inside ``, ${} or \$() is ignored.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
                 commandSeq = re.match(_commandStrRegex, ps1[parserPos:])
                 if commandSeq:
@@ -58,6 +59,10 @@ def parse(ps1):
                 else:
                     raise PS1Error(0, 'Command sequence not closed.')
                 continue
+            
+            if re.match(_escSeqBeginRegex, ps1[parserPos:]):
+                raise PS1Error(0, 'Color code encountered without '
+                                  'enclosing \[ .. \].')
 
             if ps1[parserPos] == '\\':
                 
@@ -73,9 +78,7 @@ def parse(ps1):
             parserPos += 1
     except SyntaxError as err:
         parserPos += err.pos
-
         print('Error: {0}\n{1}\n{2}^'.format(err.msg, ps1, '-' * parserPos))
-
         return False
     else:
         print('Success: "{0}" is a valid PS1!'.format(ps1))
@@ -91,10 +94,10 @@ def validateVar(ps1):
 
 def validateNonPrintSeq(ps1):
     pos = 0
-    l = len(ps1)
+    ps1Len = len(ps1)
     
-    while pos < l:
-        escSeqBegin = re.match(r'\\(e|033)\[', ps1[pos:pos + 5]) 
+    while pos < ps1Len:
+        escSeqBegin = re.match(_escSeqBeginRegex, ps1[pos:pos + 5]) 
         if escSeqBegin:
             pos += len(escSeqBegin.group(0))
 
