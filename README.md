@@ -66,7 +66,7 @@ Cursor Movement Seqeunces [1]
 
 ### Shell Code and Variables
 
-Shell code must be wrapped by either `\` ... \`` or `\$( ... )`.
+Shell code must be wrapped by either `` ` ... ` `` or `\$( ... )`.
 
 ## Resources 
 
