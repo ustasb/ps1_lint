@@ -1,8 +1,8 @@
-# PS1Lint
+### PS1Lint
 
 PS1Lint is a tool for finding flaws in PS1 strings. While the shell is forgiving, a poorly formatted PS1 can cause line wrapping issues.
 
-## Usage
+#### Usage
 
 There are two ways to use PS1Lint.
 
@@ -14,7 +14,7 @@ There are two ways to use PS1Lint.
 
         python3 ps1lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
 
-## Resources 
+### Resources 
 
 * [PS1 overview](http://www.ibm.com/developerworks/linux/library/l-tip-prompt/)
 * [List of prompt variables](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html)
