@@ -24,6 +24,7 @@ A color sequence affects everything after its declaration.
 It must be escaped with \[ ... \] so that lines wrap properly.
 
 Below are valid color sequences:
+
     \[\e[0m\] (a text reset--the same as \[\033[0m\])
     \[\e[1;43m\]
     \[\e[32m\]
@@ -32,6 +33,7 @@ Below are valid color sequences:
     \[\e[34;4m\]
 
 Color Codes [1]
+
         Text attributes         Foreground colors   Background colors
         0 All attributes off    30 Black            40 Black
         1 Bold oni              31 Red              41 Red
