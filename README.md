@@ -50,7 +50,7 @@ Color Codes [1]:
 
 Cursor movement sequences must be escaped like color sequences.
 
-Cursor Movement Seqeunces [1]:
+Escaped Cursor Movement Sequences [1]:
 
         \[\e[<Line>;<Column>H\]         Cursor Position
         \[\e[<Line>;<Column>f\]        
@@ -68,23 +68,21 @@ Cursor Movement Seqeunces [1]:
 
 Shell code must be wrapped in either `` ` ... ` `` or `\$( ... )`.
 
-        \[`if [[ \$? = "0" ]]; then echo '\e[32m\h\e[0m'; else echo '\e[31m\h\e[0m' ; fi`\]
-        \$(date +%H%M)
-        `/usr/bin/tty | /bin/sed -e '\''s:/dev/::'\''`
+        `echo thing | sed 's/thing/ding/'`
+        \$(date +%H:%M)
 
 Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
         
-        ${yellow}\w${red}
         \[${blue}\]@\[${purple}\]
-        $orange\u$blue\h
+        \[$orange\]\u\[$blue\]\h
 
 ## Resources 
 
 * [PS1 overview](http://www.ibm.com/developerworks/linux/library/l-tip-prompt/)
 * [List of prompt variables](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html)
-* [Color codes and cursor movement seqeunces](http://ascii-table.com/ansi-escape-sequences.php)
+* [Color codes and cursor movement sequences](http://ascii-table.com/ansi-escape-sequences.php)
 
-Places to find new PS1s:
+Looking for a new PS1?
 * [archlinux](https://bbs.archlinux.org/viewtopic.php?id=50885)
 * [reddit](http://www.reddit.com/r/programming/comments/697cu/bash_users_what_do_you_have_for_your_ps1/)
 * [stackoverflow](http://stackoverflow.com/questions/103857/what-is-your-favorite-bash-prompt)
