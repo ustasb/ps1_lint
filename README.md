@@ -9,12 +9,16 @@ There are two ways to use PS1Lint.
 1. Use the setup.py to install the module to your machine.
 
         python3 setup.py install
+        
+        # somefile.py
+        import ps1lint
+        ps1lint.parse(r"\u@\h\n\$ ")
 
 2. Pass the module a quoted PS1 argument.
 
         python3 ps1lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
 
-## PS1 Overview
+## Quick PS1 Overview
 
 ### Prompt Variables
 
