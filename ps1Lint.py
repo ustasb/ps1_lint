@@ -31,7 +31,7 @@ _promptVars = (
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
-_validNonPrintRegex = re.compile(r'([\'`"])[^\1]*\1|\$\{[^}]*\}')
+_validNonPrintRegex = re.compile(r'\$\{[^}]*\}')
 _commandStrRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
 _cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 _colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
@@ -119,8 +119,8 @@ def validateNonPrintSeq(ps1):
                                         'sequence.')
 
         else:
-            # Anything inside quotes or ${} is okay.
-            match = re.match(_validNonPrintRegex, ps1[pos:])
+            # Anything inside ${} is okay.
+            match = re.match(_commandStrRegex, ps1[pos:])
             if match:
                 pos += len(match.group(0))
             else:

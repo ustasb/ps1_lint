@@ -5,7 +5,6 @@ PS1s prefixed with "+" are valid and "-" are invalid.
 
 +\a \d \e \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
 +\D{%a %A %b %B %c %C %d %D %e %E %F %G %g %h %H %I %j %k %l %m %M %n %O %p %P %r %R %s %S %t %T %u %U %V %w %W %x %X %y %Y %z %Z %+ %%}
-+\u@\u\["foobar"\]\D{%a %A %B %c %C %p %P %r %R %s %S %t %T %u %U %V %w %W %x %X %y %Y %z %Z %+ %%}
 +\D{%a %A %B %c %C %p %P %R %s %S   %T %u %U %V   %x %X %y    %Z %+}
 +\[\033[44;32;1m\]\!@\#\u>
 +\044 
@@ -27,6 +26,9 @@ http://www.arwin.net/tech/bash.php
 +\[\033[1;32m\](\[\033[1;32m\]\u\[\033[1;31m\]@\h\[\033[1;31m\]:\[\033[1;36m\]\w\[\033[1;32m\])\[\033[1;36m\]\$ \[\033[0;37m\]
 +${debian_chroot:+($debian_chroot)}\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;35m\]\w\[\033[0m\]\$
 +`if [ \$? = 0 ]; then echo \e[33\;40m\\\^\\\_\\\^\e[0m; else echo \e[36\;40m\\\-\e[0m\\\_\e[36\;40m\\\-\e[0m; fi` \u \w:\h)
+
+http://stick.gk2.sk/blog/2011/06/ps1-tricks/
++\[\033[1;37m\][\[\033[1;32m\]\u\[\033[0m\]@\h\[\033[0m\] $? \[\033[1;34m\]\w\[\033[0;35m\]$(__git_ps1 " %s")\[\033[1;37m\]]\[\033[0m\]
 
 http://stackoverflow.com/questions/103857/what-is-your-favorite-bash-prompt
 +\[`if [[ \$? = "0" ]]; then echo '\e[32m\h\e[0m'; else echo '\e[31m\h\e[0m' ; fi`\]:\w\n
