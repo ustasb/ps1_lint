@@ -25,12 +25,12 @@ It must be escaped with \[ ... \] so that lines wrap properly.
 
 Below are valid color sequences:
 
-    \[\e[0m\] (a text reset--the same as \[\033[0m\])
-    \[\e[1;43m\]
-    \[\e[32m\]
-    \[\e[4;32;44m\]
-    \[\e[44;0;34m\]
-    \[\e[34;4m\]
+        \[\e[0m\] (a text reset--the same as \[\033[0m\])
+        \[\e[1;43m\]
+        \[\e[32m\]
+        \[\e[4;32;44m\]
+        \[\e[44;0;34m\]
+        \[\e[34;4m\]
 
 Color Codes [1]
 
