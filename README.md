@@ -8,7 +8,7 @@ There are two ways to use PS1Lint.
 
 1. Use the setup.py to install the module to your machine.
 
-    python3 setup.py install
+        python3 setup.py install
 
 2. Pass the module a quoted PS1 argument.
 
