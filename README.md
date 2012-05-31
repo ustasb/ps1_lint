@@ -32,15 +32,15 @@ Below are valid color sequences:
     \[\e[34;4m\]
 
 Color Codes [1]
-    Text attributes         Foreground colors   Background colors
-    0 All attributes off    30 Black            40 Black
-    1 Bold oni              31 Red              41 Red
-    4 Underscore            32 Green            42 Green
-    5 Blink on              33 Yellow           43 Yellow
-    7 Reverse video on      34 Blue             44 Blue
-    8 Concealed on          35 Magenta          45 Magenta
-                            36 Cyan             46 Cyan
-                            37 White            47 White
+        Text attributes         Foreground colors   Background colors
+        0 All attributes off    30 Black            40 Black
+        1 Bold oni              31 Red              41 Red
+        4 Underscore            32 Green            42 Green
+        5 Blink on              33 Yellow           43 Yellow
+        7 Reverse video on      34 Blue             44 Blue
+        8 Concealed on          35 Magenta          45 Magenta
+                                36 Cyan             46 Cyan
+                                37 White            47 White
 
 ## Resources 
 
