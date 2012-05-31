@@ -14,7 +14,7 @@ There are two ways to use PS1Lint.
 
         python3 ps1lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
 
-## PS1 Overview 
+## PS1 Overview
 
 ### Prompt Variables
 
@@ -25,7 +25,7 @@ See [here](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.h
 A color sequence affects everything after its declaration.
 It must be escaped with `\[ ... \]` so that lines wrap properly.
 
-Below are valid color sequences.
+Below are valid color sequences:
 
         \[\e[0m\] (a text reset--the same as \[\033[0m\])
         \[\e[1;43m\]
@@ -34,7 +34,7 @@ Below are valid color sequences.
         \[\e[44;0;34m\]
         \[\e[34;4m\]
 
-Color Codes [1]
+Color Codes [1]:
 
         Text Attributes         Foreground Colors   Background Colors
         0 All Attributes Off    30 Black            40 Black
@@ -48,9 +48,9 @@ Color Codes [1]
 
 ### Cursor Movement
 
-Cursor movement sequences must be escaped like color seqeunces.
+Cursor movement sequences must be escaped like color sequences.
 
-Cursor Movement Seqeunces [1]
+Cursor Movement Seqeunces [1]:
 
         \[\e[<Line>;<Column>H\]         Cursor Position
         \[\e[<Line>;<Column>f\]        
@@ -66,7 +66,17 @@ Cursor Movement Seqeunces [1]
 
 ### Shell Code and Variables
 
-Shell code must be wrapped by either `` ` ... ` `` or `\$( ... )`.
+Shell code must be wrapped in either `` ` ... ` `` or `\$( ... )`.
+
+        \[`if [[ \$? = "0" ]]; then echo '\e[32m\h\e[0m'; else echo '\e[31m\h\e[0m' ; fi`\]
+        \$(date +%H%M)
+        `/usr/bin/tty | /bin/sed -e '\''s:/dev/::'\''`
+
+Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
+        
+        ${yellow}\w${red}
+        \[${blue}\]@\[${purple}\]
+        $orange\u$blue\h
 
 ## Resources 
 
