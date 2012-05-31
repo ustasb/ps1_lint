@@ -1,3 +1,3 @@
 #!/usr/local/bin/python3
 
-import tests.ps1lint_test
+import tests.ps1Lint_test

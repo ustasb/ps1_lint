@@ -11,12 +11,12 @@ There are two ways to use PS1Lint.
         python3 setup.py install
         
         # somefile.py
-        import ps1lint
-        ps1lint.parse(r"\u@\h\n\$ ")
+        import ps1Lint
+        ps1Lint.parse(r"\u@\h\n\$ ")
 
 2. Pass the module a quoted PS1 argument.
 
-        python3 ps1lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
+        python3 ps1Lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
 
 ## Quick PS1 Overview
 
@@ -26,8 +26,7 @@ See [here](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.h
 
 ### Colors
 
-A color sequence affects everything after its declaration.
-It must be escaped with `\[ ... \]` so that lines wrap properly.
+A color sequence affects everything after its declaration. It must be escaped with `\[ ... \]` so that lines wrap properly.
 
 Below are valid color sequences:
 
