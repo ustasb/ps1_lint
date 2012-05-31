@@ -135,8 +135,6 @@ def validateNonPrintSeq(ps1):
     
     raise PS1Error(0, 'Escape sequence was never closed.')
 
-def main():
+if __name__ == '__main__':
     import sys
     parse(sys.argv[1])
-
-if __name__ == '__main__': main()
