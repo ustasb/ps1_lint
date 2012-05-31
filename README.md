@@ -23,7 +23,7 @@ See [here](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.h
 ### Colors
 
 A color sequence affects everything after its declaration.
-It must be escaped with code(\[ ... \]) so that lines wrap properly.
+It must be escaped with `\[ ... \]` so that lines wrap properly.
 
 Below are valid color sequences.
 
@@ -66,7 +66,7 @@ Cursor Movement Seqeunces [1]
 
 ### Shell Code and Variables
 
-Shell code must be wrapped by either code(` ... `) or code(\$( ... )).
+Shell code must be wrapped by either `\` ... \`` or `\$( ... )`.
 
 ## Resources 
 
