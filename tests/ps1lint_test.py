@@ -1,11 +1,9 @@
-#!/usr/local/bin/python3
-
-import ps1Lint
+import ps1lint
 
 lineNum = 0
 tests = 0
 testsPassed = 0
-testPS1s = open('tests/testPS1s.txt')
+testPS1s = open('tests/ps1s.txt')
 
 def test(lineNum, ps1, validPS1):
     global tests, testsPassed 
