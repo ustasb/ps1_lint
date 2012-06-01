@@ -6,7 +6,7 @@ PS1Lint is a tool for finding flaws in Bash PS1 strings. While Bash is forgiving
 
 There are two ways to use PS1Lint.
 
-1. Use the setup.py to install the module to your machine.
+1. Use setup.py to install the module to your machine.
 
         python3 setup.py install
         
