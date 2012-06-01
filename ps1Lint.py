@@ -77,7 +77,7 @@ def parse(ps1):
 
             parserPos += 1
 
-    except SyntaxError as err:
+    except PS1Error as err:
         parserPos += err.pos
         print('Error: {0}\n{1}\n{2}^'.format(err.msg, ps1, '-' * parserPos))
         return False
