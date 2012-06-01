@@ -31,11 +31,12 @@ _promptVars = (
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
-_validNonPrintRegex = re.compile(r'\$\{[^}]*\}')
-_commandStrRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
-_cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
-_colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
+# Anything inside ``, \$(), or ${} is ignored.
+_shellCodeRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
 _escSeqBeginRegex = re.compile(r'\\(e|033)\[')
+# Control Sequence Introducers (CSI)
+_colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
+_cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 
 # Custom exception class
 class PS1Error(SyntaxError):
@@ -43,32 +44,30 @@ class PS1Error(SyntaxError):
         self.pos = pos
         self.msg = msg
 
-def parse(ps1): 
+def parse(ps1):
     parserPos = 0
     ps1Len = len(ps1)
 
     try:
         while parserPos < ps1Len:
 
-            # Anything inside ``, ${} or \$() is ignored.
+            # If `, \$(, or ${ is encountered, look for its closing equivalent.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
-                commandSeq = re.match(_commandStrRegex, ps1[parserPos:])
-                if commandSeq:
+                commandSeq = re.match(_shellCodeRegex, ps1[parserPos:])
+                if commandSeq is not None:
                     parserPos += len(commandSeq.group(0))
                 else:
                     raise PS1Error(0, 'Command sequence not closed.')
                 continue
             
-            elif re.match(_escSeqBeginRegex, ps1[parserPos:]):
+            elif re.match(_escSeqBeginRegex, ps1[parserPos:]) is not None:
                 raise PS1Error(0, 'Color or cursor sequence encountered '
                                   'without being escaped by \[ ... \].')
 
             # Don't match backslashes followed by white space or at the end
             # of the line.
-            elif re.match(r'\\(?!\s|$)', ps1[parserPos:]):
-                
+            elif re.match(r'\\(?!\s|$)', ps1[parserPos:]) is not None:
                 parserPos += 1
-
                 if ps1[parserPos] == '[':
                     parserPos += 1
                     parserPos += validateNonPrintSeq(ps1[parserPos:])
@@ -77,6 +76,7 @@ def parse(ps1):
                 continue
 
             parserPos += 1
+
     except SyntaxError as err:
         parserPos += err.pos
         print('Error: {0}\n{1}\n{2}^'.format(err.msg, ps1, '-' * parserPos))
@@ -88,7 +88,7 @@ def parse(ps1):
 def validateVar(ps1):
     for var in _promptVars:
         match = re.match(var, ps1)
-        if match:
+        if match is not None:
             return len(match.group(0))
     
     raise PS1Error(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
@@ -99,11 +99,11 @@ def validateNonPrintSeq(ps1):
     
     while pos < ps1Len:
         escSeqBegin = re.match(_escSeqBeginRegex, ps1[pos:pos + 5]) 
-        if escSeqBegin:
+        if escSeqBegin is not None:
             pos += len(escSeqBegin.group(0))
 
             colorCSI = re.match(_colorCSIRegex, ps1[pos:])
-            if colorCSI:
+            if colorCSI is not None:
                 pos += len(colorCSI.group(0))
 
                 if ps1[pos:pos + 2] != r'\]':
@@ -112,16 +112,15 @@ def validateNonPrintSeq(ps1):
                                         'didn\'t.')
             else:
                 cursorMvmentCSI = re.match(_cursorMvmentCSIRegex, ps1[pos:])
-                if cursorMvmentCSI:
+                if cursorMvmentCSI is not None:
                     pos += len(cursorMvmentCSI.group(0))
                 else:
                     raise PS1Error(pos, 'Invalid color or cursor movement '
                                         'sequence.')
 
         else:
-            # Anything inside ${} is okay.
-            match = re.match(_commandStrRegex, ps1[pos:])
-            if match:
+            match = re.match(_shellCodeRegex, ps1[pos:])
+            if match is not None:
                 pos += len(match.group(0))
             else:
                 raise PS1Error(pos, 'Meaningless "{0}" character inside '
