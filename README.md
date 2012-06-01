@@ -12,7 +12,7 @@ There are two ways to use PS1Lint.
         
         # somefile.py
         import ps1Lint
-        ps1Lint.parse(r"\u@\h\n\$ ")
+        ps1Lint.parse(r"\u@\h\n\$ ") # Returns a boolean.
 
 2. Pass the module a quoted PS1 argument.
 
@@ -82,7 +82,7 @@ Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
 ## Resources 
 
 * [PS1 overview](http://www.ibm.com/developerworks/linux/library/l-tip-prompt/)
-* [\[1\] Color codes and cursor movement sequences](http://ascii-table.com/ansi-escape-sequences.php)
+* [\[1\] Cursor movement sequences and color codes](http://ascii-table.com/ansi-escape-sequences.php)
 
 Looking for a new PS1?
 * [archlinux](https://bbs.archlinux.org/viewtopic.php?id=50885)
