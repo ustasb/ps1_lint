@@ -1,6 +1,6 @@
 # PS1Lint
 
-PS1Lint is a tool for finding flaws in PS1 strings. While the shell is forgiving, a poorly formatted PS1 can cause line wrapping issues.
+PS1Lint is a tool for finding flaws in Bash PS1 strings. While Bash is forgiving, a poorly formatted PS1 can cause line wrapping issues.
 
 ## Usage
 
@@ -83,7 +83,7 @@ Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
 
 * [PS1 overview](http://www.ibm.com/developerworks/linux/library/l-tip-prompt/)
 * [List of prompt variables](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html)
-* [Color codes and cursor movement sequences](http://ascii-table.com/ansi-escape-sequences.php)
+* [\[1\] Color codes and cursor movement sequences](http://ascii-table.com/ansi-escape-sequences.php)
 
 Looking for a new PS1?
 * [archlinux](https://bbs.archlinux.org/viewtopic.php?id=50885)
