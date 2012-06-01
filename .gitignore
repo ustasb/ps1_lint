@@ -1,0 +1,4 @@
+*.swo
+*.swp
+tests/__pycache__/*
+__pycache__/*
