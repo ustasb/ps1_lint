@@ -3,7 +3,7 @@ PS1s prefixed with "+" are valid and "-" are invalid.
 
 #----- VALID PS1s -----
 
-+\a \d \e \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
++\a \d \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
 +\D{%a %A %b %B %c %C %d %D %e %E %F %G %g %h %H %I %j %k %l %m %M %n %O %p %P %r %R %s %S %t %T %u %U %V %w %W %x %X %y %Y %z %Z %+ %%}
 +\D{%a %A %B %c %C %p %P %R %s %S   %T %u %U %V   %x %X %y    %Z %+}
 +\[\033[44;32;1m\]\!@\#\u>
@@ -167,7 +167,7 @@ https://bbs.archlinux.org/viewtopic.php?id=50885
 -${debian_chroot:+($` dd  `debian_chroot)}\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;35m\]w\[\033[m\]\$
 -`if [ \$? = 0 ]; then echo \e[33\;40m\\\^\\\_\\\^\e[0m; else echo \e[36\;40m\\\-\e[0m\\\_\e[36\;40m\\\-\e[0m; fi` \u` \w:\h)
 -\[`if [[ \$? = "0" ]]; then echo '\e[32m\h\e[0m'; else echo e[31m\h\e[0m' ; fi\]:\w\n
-j\[\033[1m\][ \[\033[1;31m\]\u@\h \[\033[0m\]\[\033[1m]] \[\033[1;32m\]\w\[\033[0m\]\n\[\033[1;31m\]$\[\033[0m\]>
+-\[\033[1m\][ \[\033[1;31m\]\u@\h \[\033[0m\]\[\033[1m]] \[\033[1;32m\]\w\[\033[0m\]\n\[\033[1;31m\]$\[\033[0m\]>
 -\u@\h:\/\w [$?]\$
 -\u@\h \W \`if [[ \$? = "0" ]]; then echo '=)'; else echo '=(' ; fi` \$
 -\[$ora nge\]\u\[$blue\]\h

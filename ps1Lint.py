@@ -3,8 +3,8 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
+# NOTE: \e is a valid variable but it will only be tested if inside \[ ... \]
 PROMPT_VARS = (
-    'e', # escape
     'u', # username
     'h', # short hostname
     'w', # current working directory
