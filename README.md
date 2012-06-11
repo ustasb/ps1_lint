@@ -16,7 +16,7 @@ There are two ways to use PS1Lint.
 
 2. Pass the module a quoted PS1 argument.
 
-        python3 ps1Lint.py "\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] "
+        python3 ps1Lint.py '\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] '
 
 ## Quick PS1 Overview
 
