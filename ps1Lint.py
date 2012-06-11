@@ -4,27 +4,27 @@ import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
 PROMPT_VARS = (
+    'e', # escape
+    'u', # username
+    'h', # short hostname
+    'w', # current working directory
+    'n', # newline
+    'W', # basename $PWD
+    'H', # full hostname
+    '#', # command number
+    '@', # time 12AM/PM
     'a', # bell
     'd', # date
-    'e', # escape
-    'h', # short hostname
-    'H', # full hostname
     'j', # jobs
     'l', # device name
-    'n', # newline
     'r', # carriage return
     's', # shell name
     't', # time 24HH:MM:SS
     'T', # time 12HH:MM:SS
-    '@', # time 12AM/PM
     'A', # time 24HH:MM
-    'u', # username
     'v', # bash version
     'V', # bash release
-    'w', # current working directory
-    'W', # basename $PWD
     '!', # history number
-    '#', # command number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
     r'[0-3][0-7][0-7]', # ASCII octal code
