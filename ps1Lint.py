@@ -27,12 +27,12 @@ PROMPT_VARS = (
     '!', # history number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
-    r'[0-3][0-7][0-7]', # ASCII octal code
+    r'[0-1][0-7][0-7]', # ASCII *OCTAL* code
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
-# Anything inside ``, \$(), or ${} is ignored.
-SHELL_CODE_REGEX = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
+# Anything inside ``, \$(), ${} or formatted as $<varName> is ignored.
+SHELL_CODE_REGEX = re.compile(r'(`[^`]+`|\\\$\([^)]+\)|\$\{[^\}]+\}|\$\w+)+')
 ESC_SEQ_START_REGEX = re.compile(r'\\(e|033)\[')
 # Control Sequence Introducers (CSI)
 COLOR_CSI_REGEX = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
@@ -72,7 +72,7 @@ def parse(ps1):
                     parserPos += 1
                     parserPos += validateNonPrintSeq(ps1[parserPos:])
                 else:
-                    parserPos += validateVar(ps1[parserPos:])        
+                    parserPos += validateVar(ps1[parserPos:])
                 continue
 
             parserPos += 1
