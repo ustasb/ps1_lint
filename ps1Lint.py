@@ -131,8 +131,6 @@ def validateNonPrintSeq(ps1):
             # Return the entire length of the escaped expression.
             return pos + 2
 
-        pos += 1
-    
     raise PS1Error(0, 'Escape sequence was never closed.')
 
 if __name__ == '__main__':
