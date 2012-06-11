@@ -3,7 +3,8 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-# NOTE: \e is a valid variable but it will only be tested if inside \[ ... \]
+# NOTE: \e is a valid variable but it will only be tested if inside \[ ... \].
+# Otherwise, by itself, it is considered invalid.
 PROMPT_VARS = (
     'u', # username
     'h', # short hostname
