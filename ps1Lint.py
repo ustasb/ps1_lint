@@ -3,7 +3,7 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-_promptVars = (
+PROMPT_VARS = (
     'a', # bell
     'd', # date
     'e', # escape
@@ -32,11 +32,11 @@ _promptVars = (
 )
 
 # Anything inside ``, \$(), or ${} is ignored.
-_shellCodeRegex = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
-_escSeqBeginRegex = re.compile(r'\\(e|033)\[')
+SHELL_CODE_REGEX = re.compile(r'`[^`]*`|\\\$\([^)]*\)|\$\{[^}]*\}')
+ESC_SEQ_START_REGEX = re.compile(r'\\(e|033)\[')
 # Control Sequence Introducers (CSI)
-_colorCSIRegex = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
-_cursorMvmentCSIRegex = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
+COLOR_CSI_REGEX = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
+CURSOR_MVMENT_CSI_REGEX = re.compile(r'(2J|\d.*[ABCD]|\d*;\d*[Hf]|[suK])(?!.*m)')
 
 # Custom exception class
 class PS1Error(SyntaxError):
@@ -53,14 +53,14 @@ def parse(ps1):
 
             # If `, \$(, or ${ is encountered, look for its closing equivalent.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
-                commandSeq = re.match(_shellCodeRegex, ps1[parserPos:])
+                commandSeq = re.match(SHELL_CODE_REGEX, ps1[parserPos:])
                 if commandSeq is not None:
                     parserPos += len(commandSeq.group(0))
                 else:
                     raise PS1Error(0, 'Command sequence not closed.')
                 continue
             
-            elif re.match(_escSeqBeginRegex, ps1[parserPos:]) is not None:
+            elif re.match(ESC_SEQ_START_REGEX, ps1[parserPos:]) is not None:
                 raise PS1Error(0, 'Color or cursor sequence encountered '
                                   'without being escaped by \[ ... \].')
 
@@ -86,7 +86,7 @@ def parse(ps1):
         return True 
 
 def validateVar(ps1):
-    for var in _promptVars:
+    for var in PROMPT_VARS:
         match = re.match(var, ps1)
         if match is not None:
             return len(match.group(0))
@@ -98,11 +98,11 @@ def validateNonPrintSeq(ps1):
     ps1Len = len(ps1)
     
     while pos < ps1Len:
-        escSeqBegin = re.match(_escSeqBeginRegex, ps1[pos:pos + 5]) 
+        escSeqBegin = re.match(ESC_SEQ_START_REGEX, ps1[pos:pos + 5]) 
         if escSeqBegin is not None:
             pos += len(escSeqBegin.group(0))
 
-            colorCSI = re.match(_colorCSIRegex, ps1[pos:])
+            colorCSI = re.match(COLOR_CSI_REGEX, ps1[pos:])
             if colorCSI is not None:
                 pos += len(colorCSI.group(0))
 
@@ -111,7 +111,7 @@ def validateNonPrintSeq(ps1):
                                         'after declared color code but it '
                                         'didn\'t.')
             else:
-                cursorMvmentCSI = re.match(_cursorMvmentCSIRegex, ps1[pos:])
+                cursorMvmentCSI = re.match(CURSOR_MVMENT_CSI_REGEX, ps1[pos:])
                 if cursorMvmentCSI is not None:
                     pos += len(cursorMvmentCSI.group(0))
                 else:
@@ -119,7 +119,7 @@ def validateNonPrintSeq(ps1):
                                         'sequence.')
 
         else:
-            match = re.match(_shellCodeRegex, ps1[pos:])
+            match = re.match(SHELL_CODE_REGEX, ps1[pos:])
             if match is not None:
                 pos += len(match.group(0))
             else:
