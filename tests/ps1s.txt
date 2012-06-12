@@ -3,18 +3,16 @@ PS1s prefixed with "+" are valid and "-" are invalid.
 
 #----- VALID PS1s -----
 
-+\a \d \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
++\d \h \H \j \l \n \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
 +\D{%a %A %b %B %c %C %d %D %e %E %F %G %g %h %H %I %j %k %l %m %M %n %O %p %P %r %R %s %S %t %T %u %U %V %w %W %x %X %y %Y %z %Z %+ %%}
 +\D{%a %A %B %c %C %p %P %R %s %S   %T %u %U %V   %x %X %y    %Z %+}
 +\[\033[44;32;1m\]\!@\#\u>
 +\044 
 +\065
 +\u \  \h
-+\u@\h\
-+\033
++\u@\h
 +\123
 +\167
-+\u\h\177
 +\u\h\1758
 +\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\]
 +\[\033[44m\]\\\$\[\033[1;31m\]\u
@@ -24,23 +22,24 @@ PS1s prefixed with "+" are valid and "-" are invalid.
 +\[${blue}\]@\[${purple}\]
 +\[$orange\]\u\[$blue\]\h
 +\w`echo thing | sed 's/thing/ding/'`\u
-+\$(date +%H:%M)\023
-+$(PS1) \u $PS1
++\$(date +%H:%M)\073
++$(echo hello) \u $PS1
 +\[$PS1$PS1\]
 +\[${PS1}$PS1\]
-+${PS1}$PS1\$(PS1)`PS1`
-+${PS1}$PS1\[\$(PS1)\]\u`PS1`
++${PS1}$PS1\$(echo hello)`echo goodbye`
++${PS1}$PS1\[\$(echo foo)\]\u`echo hello`
 +\[\e[0m\]\u
-+\[`if [ \$? = 0 ]; then echo \e[33\;40m\\\^\\\_\\\^\e[0m; else echo \e[36\;40m\\\-\e[0m\\\_\e[36\;40m\\\-\e[0m; fi`\]\u
++\[`if [ \$? = 0 ]; then echo '\e[1;40m'; else echo '\e[4;44m'; fi`\]\u
 +\[\e[1;43m\]\u
 +\[\e[32m\]\u
 +\[\e[4;32;44m\]\u
 +\[\e[44;0;34m\]\u
 +\[\e[34;4m\]\u
-+${PS1}PS1%H\u$(PS1)`PS1`
++${PS1}PS1%H\u$(echo foo)`echo bar`
 +\u$->
++\[\e[34;4m\]\[\e[4;32;44m\]\[\e[32m\]\u
 +\u$+>
-+$/$-$!$@$#$%$%$^$&$*\$($)
++$/$-$!$@$#$%$%$^$&$*\$(echo foobar)
 
 http://www.arwin.net/tech/bash.php
 +\n\[\e[31;1m\]CWD\[\e[0m\]:\[\e[36;1m\]\w\n\[\e[32;1m\]\@:\u@\h\[\e[0m\]\$
@@ -48,7 +47,6 @@ http://www.arwin.net/tech/bash.php
 +\[\033[1;31m\](\[\033[0;37m\]\u\[\033[1;31m\]@\h\[\033[1;31m\]:\[\033[1;36m\]\w\[\033[1;31m\])\[\033[1;36m\]\$ \[\033[0;37m\]
 +\[\033[1;32m\](\[\033[1;32m\]\u\[\033[1;31m\]@\h\[\033[1;31m\]:\[\033[1;36m\]\w\[\033[1;32m\])\[\033[1;36m\]\$ \[\033[0;37m\]
 +${debian_chroot:+($debian_chroot)}\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;35m\]\w\[\033[0m\]\$
-+`if [ \$? = 0 ]; then echo \e[33\;40m\\\^\\\_\\\^\e[0m; else echo \e[36\;40m\\\-\e[0m\\\_\e[36\;40m\\\-\e[0m; fi` \u \w:\h)
 
 http://stick.gk2.sk/blog/2011/06/ps1-tricks/
 +\[\033[1;37m\][\[\033[1;32m\]\u\[\033[0m\]@\h\[\033[0m\] $? \[\033[1;34m\]\w\[\033[0;35m\]$(__git_ps1 " %s")\[\033[1;37m\]]\[\033[0m\]
@@ -143,6 +141,7 @@ https://bbs.archlinux.org/viewtopic.php?id=50885
 -\[\033[46;31m\][\u@\[\033[1;33m\]\h]\]\033[0m\]>
 -\[\033[33m\]>> \[\033[33m\] \033[31m\]
 -\e[1;34m!\]\H>
+-\u\[\e[4m]
 -\[\033[1;31m\]\w/\[\03[0m\]
 -[\[\033[1;36m\]u\[\03[0m\]@\h \w]\$
 -\[\033[0;32m\]\a \[\033[0;31m\]\u\[\033[034m\]@\[\033[0;35m\]\h\[\033[0;34m\]:\[\033[0;36m\]\w\[\033[0;33m\] $\[\033[0m\]
@@ -183,3 +182,9 @@ https://bbs.archlinux.org/viewtopic.php?id=50885
 -$PS\[$(PS1]\u`PS1`
 -$/$-$!$&$*\$($
 -\e>
+
+-\a \d \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
+-\n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
+-\u\h\177
+-\$(date +%H:%M)\023
+-\033
