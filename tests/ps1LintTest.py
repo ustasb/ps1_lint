@@ -5,7 +5,7 @@ def test():
     test.tests = 0
     test.testsPassed = 0
 
-    with open('tests/ps1s.txt', 'r') as testPS1s:
+    with open('tests/ps1s', 'r') as testPS1s:
         for ps1 in testPS1s:
             lineNum += 1
             
