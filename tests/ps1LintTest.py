@@ -1,9 +1,9 @@
 import ps1Lint
 
 def test():
-    lineNum = 0
     test.tests = 0
     test.testsPassed = 0
+    lineNum = 0
 
     with open('tests/ps1s', 'r') as testPS1s:
         for ps1 in testPS1s:

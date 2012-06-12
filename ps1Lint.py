@@ -3,8 +3,8 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-# \e is only considered valid if inside \[ ... \].
-# \a and \r are invalid as they cause line wrapping issues.
+# \e is only tolerated if inside \[ ... \].
+# \a and \r are considered invalid as they cause line wrapping issues.
 PROMPT_VARS = (
     'u', # username
     'h', # short hostname
