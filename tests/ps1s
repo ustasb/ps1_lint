@@ -182,7 +182,7 @@ https://bbs.archlinux.org/viewtopic.php?id=50885
 -$PS\[$(PS1]\u`PS1`
 -$/$-$!$&$*\$($
 -\e>
-
+-\[${{FOO}}\]\u
 -\a \d \h \H \j \l \n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
 -\n \r \s \t \T \@ \A \u \v \V \w \W \! \# \\ \$
 -\u\h\177

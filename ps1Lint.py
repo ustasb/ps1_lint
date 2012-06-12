@@ -94,7 +94,7 @@ def validateVar(ps1):
         raise PS1Error(0, '"\\{0}" causes line wrapping issues and shouldn\'t '
                           'be used.'.format(ps1[0]))
     elif re.match(r'\d{3}', ps1):
-        raise PS1Error(0, '"\\{0}" is an invalid ASCII code. Octal codes '
+        raise PS1Error(0, '"\\{0}" is an invalid ASCII code. ASCII octal codes '
                           'must be between 040 and 176.'.format(ps1[:4]))
     else: 
         raise PS1Error(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
