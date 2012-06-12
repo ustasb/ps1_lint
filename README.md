@@ -12,9 +12,9 @@ There are two ways to use PS1Lint.
         
         # somefile.py
         import ps1Lint
-        ps1Lint.parse(r"\u@\h\n\$ ") # Returns a boolean.
+        ps1Lint.parse(r'\u@\h\n\$ ') # Returns a boolean.
 
-2. Pass the module a quoted PS1 argument.
+2. Pass the module a single quoted (avoids shell expansion) PS1 argument.
 
         python3 ps1Lint.py '\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] '
 
@@ -23,6 +23,7 @@ There are two ways to use PS1Lint.
 ### Prompt Variables
 
 See [here](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html) for a list of prompt variables.
+Note: \a and \r are not tolerated as they cause line wrapping issues.
 
 ### Colors
 
