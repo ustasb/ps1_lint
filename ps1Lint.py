@@ -3,8 +3,8 @@
 import re
 
 # http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
-# NOTE: \e is a valid variable but it will only be tested if inside \[ ... \].
-# Otherwise, by itself, it is considered invalid.
+# \e is only considered valid if inside \[ ... \].
+# \a and \r are invalid as they cause line wrapping issues.
 PROMPT_VARS = (
     'u', # username
     'h', # short hostname
@@ -14,11 +14,9 @@ PROMPT_VARS = (
     'H', # full hostname
     '#', # command number
     '@', # time 12AM/PM
-    'a', # bell
     'd', # date
     'j', # jobs
     'l', # device name
-    'r', # carriage return
     's', # shell name
     't', # time 24HH:MM:SS
     'T', # time 12HH:MM:SS
@@ -28,7 +26,7 @@ PROMPT_VARS = (
     '!', # history number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
-    r'[0-1][0-7][0-7]', # ASCII *OCTAL* code
+    r'(0[4-7]|1([0-6]|7(?!7)))[0-7]', # Matches octal 040-176 
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
@@ -91,8 +89,15 @@ def validateVar(ps1):
         match = re.match(var, ps1)
         if match is not None:
             return len(match.group(0))
-    
-    raise PS1Error(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
+
+    if re.match(r'a|r', ps1):
+        raise PS1Error(0, '"\\{0}" causes line wrapping issues and shouldn\'t '
+                          'be used.'.format(ps1[0]))
+    elif re.match(r'\d{3}', ps1):
+        raise PS1Error(0, '"\\{0}" is an invalid ASCII code. Octal codes '
+                          'must be between 040 and 176.'.format(ps1[:4]))
+    else: 
+        raise PS1Error(0, '"{0}" is an invalid prompt variable.'.format(ps1[0]))
 
 def validateNonPrintSeq(ps1):
     pos = 0
@@ -115,6 +120,8 @@ def validateNonPrintSeq(ps1):
                 cursorMvmentCSI = re.match(CURSOR_MVMENT_CSI_REGEX, ps1[pos:])
                 if cursorMvmentCSI is not None:
                     pos += len(cursorMvmentCSI.group(0))
+                    print('Warning: Cursor movement sequences can cause '
+                          'line wrapping issues.')
                 else:
                     raise PS1Error(pos, 'Invalid color or cursor movement '
                                         'sequence.')
