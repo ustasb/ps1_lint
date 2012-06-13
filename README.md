@@ -12,7 +12,7 @@ There are two ways to use PS1Lint.
         
         # somefile.py
         import ps1Lint
-        ps1Lint.parse(r'\u@\h\n\$ ') # Returns a boolean.
+        ps1Lint.parse(r'\u@\h\n\$ ')  # Returns a boolean.
 
 2. Pass the module a single quoted (avoids shell expansion) PS1 argument.
 
@@ -79,6 +79,16 @@ Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
         
         \[${blue}\]@\[${purple}\]
         \[$orange\]\u\[$blue\]\h
+
+### Things to Avoid
+
+Only color or movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain.
+
+        \[\n[$PWD]\] \n\[\033[1;34m\]\u  # Causes line wrapping issues.
+
+Instead, change the PS1 to this:
+
+        \n[$PWD] \n\[\033[1;34m\]\u
 
 ## Resources 
 

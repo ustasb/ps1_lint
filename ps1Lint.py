@@ -131,8 +131,9 @@ def validateNonPrintSeq(ps1):
             if match is not None:
                 pos += len(match.group(0))
             else:
-                raise PS1Error(pos, 'Meaningless "{0}" character inside '
-                                    'escape sequence.'.format(ps1[pos])) 
+                raise PS1Error(pos, '"{0}" shouldn\'t be here. Only color or '
+                                    'movement sequences should be put inside '
+                                    ' \[ ... \].'.format(ps1[pos])) 
 
         if ps1[pos:pos + 2] == r'\]':
             # Return the entire length of the escaped expression.
