@@ -10,11 +10,11 @@ There are two ways to use PS1Lint.
 
         python3 setup.py install
         
-        # somefile.py
+        # someFile.py
         import ps1Lint
         ps1Lint.parse(r'\u@\h\n\$ ')  # Returns a boolean.
 
-2. Pass the module a single quoted (avoids shell expansion) PS1 argument.
+2. Pass the module a single quoted (prevents shell expansion) PS1 argument.
 
         python3 ps1Lint.py '\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] '
 
@@ -23,13 +23,14 @@ There are two ways to use PS1Lint.
 ### Prompt Variables
 
 See [here](http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html) for a list of prompt variables.
+
 Note: \a and \r are not tolerated as they cause line wrapping issues.
 
 ### Colors
 
 A color sequence affects everything after its declaration. It must be escaped with `\[ ... \]` so that lines wrap properly.
 
-Below are valid color sequences:
+Below are valid escaped color sequences:
 
         \[\e[0m\] (a text reset--the same as \[\033[0m\])
         \[\e[1;43m\]
@@ -75,14 +76,14 @@ Shell code must be wrapped in either `` ` ... ` `` or `\$( ... )`.
         `echo thing | sed 's/thing/ding/'`
         \$(date +%H:%M)
 
-Shell variables should be wrapped in `${ ... }` or solely prefix with `$`.
+Shell variables should be wrapped in `${ ... }` or solely prefixed with `$`.
         
         \[${blue}\]@\[${purple}\]
         \[$orange\]\u\[$blue\]\h
 
 ### Things to Avoid
 
-Only color or movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain.
+Only color or movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain:
 
         \[\n[$PWD]\] \n\[\033[1;34m\]\u  # Causes line wrapping issues.
 
