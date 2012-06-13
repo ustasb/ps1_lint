@@ -31,10 +31,10 @@ PROMPT_VARS = (
 )
 
 # Anything inside ``, \$(), ${} or formatted as $<varName> is ignored.
-CMD_CODE_REGEX = re.compile(r'(`[^`]+`|\\\$\([^)]+\)|\$\{[^\}]+\}|\$\w+)+')
-ESC_SEQ_START_REGEX = re.compile(r'\\(e|033)\[')
+CMD_CODE_REGEX = re.compile(r'^((`[^`]+`|\\\$\([^)]+\)|\$\{[^\}]+\}|\$\w+)+)')
+ESC_SEQ_START_REGEX = re.compile(r'^(\\(e|033)\[)')
 # Control Sequence Introducers (CSI)
-COLOR_CSI_REGEX = re.compile(r'(([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m')
+COLOR_CSI_REGEX = re.compile(r'^((([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m)')
 CURSOR_MVMENT_CSI_REGEX = re.compile(r'^(2J|[suK]|(\d+([ABCD]|;\d+[Hf]))|(\d+;)+\d+m)')
 
 # Custom exception class
@@ -92,13 +92,14 @@ def validateVar(ps1):
             return len(match.group(0))
 
     if re.match(r'a|r', ps1):
-        raise PS1Error(-1, '"\\{0}" causes line wrapping issues and should not '
-                          'be used.'.format(ps1[0]))
+        raise PS1Error(-1, '"\\{0}" causes line wrapping issues and should '
+                           'not be used.'.format(ps1[0]))
     elif re.match(r'\d{3}', ps1):
         raise PS1Error(-1, '"\\{0}" is an invalid ASCII octal code--it must '
-                          'be between 040 and 176.'.format(ps1[:4]))
+                           'be between 040 and 176.'.format(ps1[:4]))
     else: 
-        raise PS1Error(-1, '"\\{0}" is an invalid prompt variable.'.format(ps1[0]))
+        raise PS1Error(-1, '"\\{0}" is an invalid prompt '
+                           'variable.'.format(ps1[0]))
 
 def validateNonPrintSeq(ps1):
     pos = 0
