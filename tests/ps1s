@@ -176,6 +176,8 @@
 -\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[\e[u]
 -\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[\033[2J]
 -\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[\e[3;2;3;15m]
+-\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[$orange
+-\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[$green$underline
 
 # Invalid color sequence.
 -\u@\h ${PWD}\$(echo bufferText)\[\e[4;32;44m\] `echo toTestPointer` \[\e[\]
