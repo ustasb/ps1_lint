@@ -32,7 +32,7 @@ A color sequence affects everything after its declaration. It must be escaped wi
 
 Below are valid escaped color sequences:
 
-        \[\e[0m\] (a text reset--the same as \[\033[0m\])
+        \[\e[0m\]  # (a text reset--the same as \[\033[0m\])
         \[\e[1;43m\]
         \[\e[32m\]
         \[\e[4;32;44m\]
@@ -69,21 +69,21 @@ Escaped Cursor Movement Sequences [1]:
         \[\e[K\]                        Erase Line
         \[\e[<Value>;...;<Value>m\]     Set Graphics Mode
 
-### Shell Code and Variables
+### Shell Expansions
 
 Shell code must be wrapped in either `` ` ... ` `` or `\$( ... )`.
 
         `echo thing | sed 's/thing/ding/'`
         \$(date +%H:%M)
 
-Shell variables should be wrapped in `${ ... }` or solely prefixed with `$`.
+Shell variables must be wrapped in `${ ... }` or solely prefixed with `$`.
         
         \[${blue}\]@\[${purple}\]
         \[$orange\]\u\[$blue\]\h
 
 ### Things to Avoid
 
-Only color or cursor movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain:
+Only color or cursor movement sequences should be put inside `\[ ... \]`. Do not do this as PS1Lint will complain:
 
         \[\n[$PWD]\] \n\[\033[1;34m\]\u  # Causes line wrapping issues.
 
