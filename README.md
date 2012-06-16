@@ -83,7 +83,7 @@ Shell variables should be wrapped in `${ ... }` or solely prefixed with `$`.
 
 ### Things to Avoid
 
-Only color or movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain:
+Only color or cursor movement sequences should be put inside `\[ ... \]`. Don't do this as PS1Lint will complain:
 
         \[\n[$PWD]\] \n\[\033[1;34m\]\u  # Causes line wrapping issues.
 

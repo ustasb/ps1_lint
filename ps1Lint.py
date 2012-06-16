@@ -31,7 +31,7 @@ PROMPT_VARS = (
 )
 
 # Anything inside ``, \$(), ${} or formatted as $<varName> is ignored.
-CMD_CODE_REGEX = re.compile(r'^((`[^`]+`|\\\$\([^)]+\)|\$\{[^\}]+\}|\$\w+)+)')
+SHELL_EXPANSION_REGEX = re.compile(r'^((`[^`]+`|\\\$\([^)]+\)|\$\{[^\}]+\}|\$\w+)+)')
 ESC_SEQ_START_REGEX = re.compile(r'^(\\(e|033)\[)')
 # Control Sequence Introducers (CSI)
 COLOR_CSI_REGEX = re.compile(r'^((([0-8]|3[0-7]|4[0-7]);){0,2}([0-8]|3[0-7]|4[0-7])m)')
@@ -52,7 +52,7 @@ def parse(ps1):
 
             # If `, \$(, or ${ is encountered, look for its closing equivalent.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
-                commandSeq = re.match(CMD_CODE_REGEX, ps1[parserPos:])
+                commandSeq = re.match(SHELL_EXPANSION_REGEX, ps1[parserPos:])
                 if commandSeq is not None:
                     parserPos += len(commandSeq.group(0))
                 else:
@@ -71,7 +71,7 @@ def parse(ps1):
                     parserPos += 1
                     parserPos += validateNonPrintSeq(ps1[parserPos:])
                 else:
-                    parserPos += validateVar(ps1[parserPos:])
+                    parserPos += validatePromptVar(ps1[parserPos:])
             else:
                 parserPos += 1
 
@@ -103,21 +103,18 @@ def parseCSI(ps1):
                       'wrapping issues.')
                 return csiLen, 'cursor movement'
             else:
-                raise PS1Error(-1 * escSeqStartLen, 'Invalid color or cursor '
-                                                     'movement sequence.')
+                raise PS1Error(0, 'Invalid color or cursor movement sequence.')
     else:
         return False
 
-def parseExpansion(ps1):
-    match = re.match(CMD_CODE_REGEX, ps1)
+def parseShellExpansion(ps1):
+    match = re.match(SHELL_EXPANSION_REGEX, ps1)
     if match is not None:
         return len(match.group(0))
     else:
-        raise PS1Error(0, '"{0}" should not be here. Only color or '
-                            'cursor movement sequences should be put '
-                            'inside \[ ... \].'.format(ps1[0])) 
+        return False
 
-def validateVar(ps1):
+def validatePromptVar(ps1):
     for var in PROMPT_VARS:
         match = re.match(var, ps1)
         if match is not None:
@@ -133,23 +130,27 @@ def validateVar(ps1):
         raise PS1Error(-1, '"\\{0}" is an invalid prompt '
                            'variable.'.format(ps1[0]))
 
-
 def validateNonPrintSeq(ps1):
     pos = 0
     ps1Len = len(ps1)
     
     while pos < ps1Len:
-        
+
         csi = parseCSI(ps1[pos:])
         if csi is not False:
             pos += csi[0]
-
             if ps1[pos:pos + 2] != r'\]':
                 raise PS1Error(pos, 'Expecting non-printing sequence to '
                                     'close after declared {0} sequence '
                                     'but it did not.'.format(csi[1]))
         else:
-            pos += parseExpansion(ps1[pos:])
+            shellExpLen = parseShellExpansion(ps1[pos:])
+            if shellExpLen is not False:
+                pos += shellExpLen
+            else:
+                raise PS1Error(0, '"{0}" should not be here. Only color or '
+                                    'cursor movement sequences should be put '
+                                    'inside \[ ... \].'.format(ps1[pos])) 
 
         if ps1[pos:pos + 2] == r'\]':
             # Return the entire length of the escaped expression.
