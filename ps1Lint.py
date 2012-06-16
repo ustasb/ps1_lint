@@ -52,11 +52,11 @@ def parse(ps1):
 
             # If `, \$(, or ${ is encountered, look for its closing equivalent.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
-                commandSeq = re.match(SHELL_EXPANSION_REGEX, ps1[parserPos:])
-                if commandSeq is not None:
-                    parserPos += len(commandSeq.group(0))
+                shellExpSeq = re.match(SHELL_EXPANSION_REGEX, ps1[parserPos:])
+                if shellExpSeq is not None:
+                    parserPos += len(shellExpSeq.group(0))
                 else:
-                    raise PS1Error(0, 'Command sequence not closed.')
+                    raise PS1Error(0, 'Shell expansion sequence not closed.')
             
             elif re.match(ESC_SEQ_START_REGEX, ps1[parserPos:]) is not None:
                 raise PS1Error(0, 'Color or cursor movement sequence '
@@ -148,7 +148,7 @@ def validateNonPrintSeq(ps1):
             if shellExpLen is not False:
                 pos += shellExpLen
             else:
-                raise PS1Error(0, '"{0}" should not be here. Only color or '
+                raise PS1Error(pos, '"{0}" should not be here. Only color or '
                                     'cursor movement sequences should be put '
                                     'inside \[ ... \].'.format(ps1[pos])) 
 
@@ -156,7 +156,7 @@ def validateNonPrintSeq(ps1):
             # Return the entire length of the escaped expression.
             return pos + 2
 
-    raise PS1Error(0, 'Escape sequence was never closed.')
+    raise PS1Error(-2, 'Non-printing sequence was never closed.')
 
 if __name__ == '__main__':
     import sys
