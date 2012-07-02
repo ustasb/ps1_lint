@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 import ps1Lint
 
 def test():
@@ -5,7 +7,7 @@ def test():
     test.testsPassed = 0
     lineNum = 0
 
-    with open('tests/ps1s', 'r') as testPS1s:
+    with open('ps1s', 'r') as testPS1s:
         for ps1 in testPS1s:
             lineNum += 1
             
@@ -32,3 +34,21 @@ def testLine(lineNum, ps1, validPS1):
 
     print('{0}: This PS1 is{1}valid.\n'
           .format(result, ' ' if validPS1 is True else ' NOT '))
+
+if __name__ == '__main__':
+    import os
+    import sys
+    import timeit
+
+    TESTS = 50
+
+    # Suppress output while timing tests.
+    oldStdout = sys.stdout
+    sys.stdout = open(os.devnull, 'w')
+    timeTaken = timeit.timeit(test, number=TESTS)
+
+    # Print a test to the console.
+    sys.stdout.close()
+    sys.stdout = oldStdout
+    test()
+    print('Running {0} times took {1} seconds.'.format(TESTS, timeTaken))

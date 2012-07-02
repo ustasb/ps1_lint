@@ -69,9 +69,9 @@ def parse(ps1):
                 parserPos += 1
                 if ps1[parserPos] == '[':
                     parserPos += 1
-                    parserPos += validateNonPrintSeq(ps1[parserPos:])
+                    parserPos += _getNonPrintSeqLen(ps1[parserPos:])
                 else:
-                    parserPos += validatePromptVar(ps1[parserPos:])
+                    parserPos += _getPromptVarLen(ps1[parserPos:])
             else:
                 parserPos += 1
 
@@ -83,7 +83,7 @@ def parse(ps1):
         print('Success: "{0}" is a valid PS1!'.format(ps1))
         return True 
 
-def validateCSI(ps1):
+def _getCSILenAndColor(ps1):
     csiLen = 0
 
     escSeqStart = re.match(ESC_SEQ_START_REGEX, ps1[:5]) 
@@ -107,14 +107,14 @@ def validateCSI(ps1):
     else:
         return False
 
-def validateShellExpansion(ps1):
+def _getShellExpansionLen(ps1):
     match = re.match(SHELL_EXPANSION_REGEX, ps1)
     if match is not None:
         return len(match.group(0))
     else:
-        return False
+        return 0
 
-def validatePromptVar(ps1):
+def _getPromptVarLen(ps1):
     for var in PROMPT_VARS:
         match = re.match(var, ps1)
         if match is not None:
@@ -130,22 +130,22 @@ def validatePromptVar(ps1):
         raise PS1Error(-1, '"\\{0}" is an invalid prompt '
                            'variable.'.format(ps1[0]))
 
-def validateNonPrintSeq(ps1):
+def _getNonPrintSeqLen(ps1):
     pos = 0
     ps1Len = len(ps1)
     
     while pos < ps1Len:
 
-        csi = validateCSI(ps1[pos:])
-        if csi is not False:
-            pos += csi[0]
+        csiLenColor = _getCSILenAndColor(ps1[pos:])
+        if csiLenColor != 0:
+            pos += csiLenColor[0]
             if ps1[pos:pos + 2] != r'\]':
                 raise PS1Error(pos, 'Expecting non-printing sequence to '
                                     'close after declared {0} sequence '
-                                    'but it did not.'.format(csi[1]))
+                                    'but it did not.'.format(csiLenColor[1]))
         else:
-            shellExpLen = validateShellExpansion(ps1[pos:])
-            if shellExpLen is not False:
+            shellExpLen = _getShellExpansionLen(ps1[pos:])
+            if shellExpLen != 0:
                 pos += shellExpLen
             else:
                 raise PS1Error(pos, '"{0}" should not be here. Only color or '
