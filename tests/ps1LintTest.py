@@ -43,13 +43,14 @@ if __name__ == '__main__':
 
     TESTS = 50
 
+    oldStdOut = sys.stdout
+
     # Suppress output while timing tests.
-    oldStdout = sys.stdout
     sys.stdout = open(os.devnull, 'w')
     timeTaken = timeit.timeit(test, number=TESTS)
+    sys.stdout.close()
 
     # Print a test to the console.
-    sys.stdout.close()
-    sys.stdout = oldStdout
+    sys.stdout = oldStdOut
     test()
     print('Running {0} times took {1} seconds.'.format(TESTS, timeTaken))
