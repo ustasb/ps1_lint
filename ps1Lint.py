@@ -105,7 +105,7 @@ def _getCSILenAndType(ps1):
             else:
                 raise PS1Error(0, 'Invalid color or cursor movement sequence.')
     else:
-        return False
+        return csiLen 
 
 def _getShellExpansionLen(ps1):
     match = re.match(SHELL_EXPANSION_REGEX, ps1)
