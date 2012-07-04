@@ -83,7 +83,7 @@ def parse(ps1):
         print('Success: "{0}" is a valid PS1!'.format(ps1))
         return True 
 
-def _getCSILenAndColor(ps1):
+def _getCSILenAndType(ps1):
     csiLen = 0
 
     escSeqStart = re.match(ESC_SEQ_START_REGEX, ps1[:5]) 
@@ -136,13 +136,13 @@ def _getNonPrintSeqLen(ps1):
     
     while pos < ps1Len:
 
-        csiLenColor = _getCSILenAndColor(ps1[pos:])
-        if csiLenColor != 0:
-            pos += csiLenColor[0]
+        csiLenAndType = _getCSILenAndType(ps1[pos:])
+        if csiLenAndType != 0:
+            pos += csiLenAndType[0]
             if ps1[pos:pos + 2] != r'\]':
                 raise PS1Error(pos, 'Expecting non-printing sequence to '
-                                    'close after declared {0} sequence '
-                                    'but it did not.'.format(csiLenColor[1]))
+                                    'close after declared {0} sequence but '
+                                    'it did not.'.format(csiLenAndType[1]))
         else:
             shellExpLen = _getShellExpansionLen(ps1[pos:])
             if shellExpLen != 0:
