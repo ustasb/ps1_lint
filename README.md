@@ -16,6 +16,9 @@ There are two ways to use PS1Lint.
 
 2. Pass the module a single quoted (prevents shell expansion) PS1 argument.
 
+        ps1Lint.py [-h] bashPS1
+
+        # e.g.
         python3 ps1Lint.py '\[\e[0;32m\]\u@\[\e[0;36m\]\h:\[\e[0;35m\] '
 
 ## Quick PS1 Overview

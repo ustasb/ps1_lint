@@ -159,5 +159,11 @@ def _getNonPrintSeqLen(ps1):
     raise PS1Error(-2, 'Non-printing sequence was never closed.')
 
 if __name__ == '__main__':
-    import sys
-    parse(sys.argv[1])
+    import argparse
+
+    parser = argparse.ArgumentParser(description='A tool for finding flaws '
+                                                 'in Bash PS1 strings.')
+    parser.add_argument('bashPS1', help='single quoted bash PS1')
+    args = parser.parse_args()
+
+    parse(args.bashPS1)

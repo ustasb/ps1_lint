@@ -7,7 +7,8 @@ def test():
     test.testsPassed = 0
     lineNum = 0
 
-    with open('ps1s', 'r') as testPS1s:
+    testPs1sPath = os.path.dirname(os.path.realpath(__file__)) + '/ps1s'
+    with open(testPs1sPath, 'r') as testPS1s:
         for ps1 in testPS1s:
             lineNum += 1
             
