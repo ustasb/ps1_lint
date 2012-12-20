@@ -1,5 +1,7 @@
 # PS1Lint
 
+*Initial release: 06/03/2012*
+
 PS1Lint is a tool for finding flaws in Bash PS1 strings. While Bash is forgiving, a poorly formatted PS1 can cause line wrapping issues.
 
 ## Usage
@@ -9,7 +11,7 @@ There are two ways to use PS1Lint.
 1. Use setup.py to install the module to your machine.
 
         python3 setup.py install
-        
+
         # someFile.py
         import ps1Lint
         ps1Lint.parse(r'\u@\h\n\$ ')  # Returns a boolean.
@@ -61,7 +63,7 @@ Cursor movement sequences must be escaped like color sequences.
 Escaped Cursor Movement Sequences [1]:
 
         \[\e[<Line>;<Column>H\]         Cursor Position
-        \[\e[<Line>;<Column>f\]        
+        \[\e[<Line>;<Column>f\]
         \[\e[<Value>A\]                 Cursor Up
         \[\e[<Value>B\]                 Cursor Down
         \[\e[<Value>C\]                 Cursor Forward
@@ -80,7 +82,7 @@ Shell code must be wrapped in either `` ` ... ` `` or `\$( ... )`.
         \$(date +%H:%M)
 
 Shell variables must be wrapped in `${ ... }` or solely prefixed with `$`.
-        
+
         \[${blue}\]@\[${purple}\]
         \[$orange\]\u\[$blue\]\h
 
@@ -94,7 +96,7 @@ Instead, change the PS1 to this:
 
         \n[$PWD] \n\[\033[1;34m\]\u
 
-## Resources 
+## Resources
 
 * [PS1 overview](http://www.ibm.com/developerworks/linux/library/l-tip-prompt/)
 * [\[1\] Cursor movement sequences and color codes](http://ascii-table.com/ansi-escape-sequences.php)
