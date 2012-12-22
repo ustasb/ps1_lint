@@ -2,7 +2,7 @@
 
 import re
 
-# http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html 
+# http://www.gnu.org/software/bash/manual/html_node/Printing-a-Prompt.html
 # \e is only tolerated if inside \[ ... \].
 # \a and \r are considered invalid as they cause line wrapping issues.
 PROMPT_VARS = (
@@ -26,7 +26,7 @@ PROMPT_VARS = (
     '!', # history number
     r'\\', # backslash
     r'\$(?!\()', # effective UID
-    r'(0[4-7]|1([0-6]|7(?!7)))[0-7]', # Matches octal 040-176 
+    r'(0[4-7]|1([0-6]|7(?!7)))[0-7]', # Matches octal 040-176
     r'D\{(%[a-zA-z\+%]\s*)+\}' # strftime
 )
 
@@ -49,7 +49,6 @@ def parse(ps1):
 
     try:
         while parserPos < ps1Len:
-
             # If `, \$(, or ${ is encountered, look for its closing equivalent.
             if re.match(r'`|\\\$\(|\$\{', ps1[parserPos:]):
                 shellExpSeq = re.match(SHELL_EXPANSION_REGEX, ps1[parserPos:])
@@ -57,7 +56,7 @@ def parse(ps1):
                     parserPos += len(shellExpSeq.group(0))
                 else:
                     raise PS1Error(0, 'Shell expansion sequence not closed.')
-            
+
             elif re.match(ESC_SEQ_START_REGEX, ps1[parserPos:]) is not None:
                 raise PS1Error(0, 'Color or cursor movement sequence '
                                   'encountered without being escaped by '
@@ -81,14 +80,15 @@ def parse(ps1):
         return False
     else:
         print('Success: "{0}" is a valid PS1!'.format(ps1))
-        return True 
+        return True
 
+# CSI: Control Sequence Introducer
 def _getCSILenAndType(ps1):
     csiLen = 0
 
-    escSeqStart = re.match(ESC_SEQ_START_REGEX, ps1[:5]) 
+    escSeqStart = re.match(ESC_SEQ_START_REGEX, ps1[:5])
     if escSeqStart is not None:
-        escSeqStartLen = len(escSeqStart.group(0)) 
+        escSeqStartLen = len(escSeqStart.group(0))
         csiLen += escSeqStartLen
 
         colorCSI = re.match(COLOR_CSI_REGEX, ps1[csiLen:])
@@ -105,7 +105,7 @@ def _getCSILenAndType(ps1):
             else:
                 raise PS1Error(0, 'Invalid color or cursor movement sequence.')
     else:
-        return csiLen 
+        return csiLen
 
 def _getShellExpansionLen(ps1):
     match = re.match(SHELL_EXPANSION_REGEX, ps1)
@@ -126,14 +126,14 @@ def _getPromptVarLen(ps1):
     elif re.match(r'\d{3}', ps1):
         raise PS1Error(-1, '"\\{0}" is an invalid ASCII octal code--it must '
                            'be between 040 and 176.'.format(ps1[:4]))
-    else: 
+    else:
         raise PS1Error(-1, '"\\{0}" is an invalid prompt '
                            'variable.'.format(ps1[0]))
 
 def _getNonPrintSeqLen(ps1):
     pos = 0
     ps1Len = len(ps1)
-    
+
     while pos < ps1Len:
 
         csiLenAndType = _getCSILenAndType(ps1[pos:])
@@ -150,7 +150,7 @@ def _getNonPrintSeqLen(ps1):
             else:
                 raise PS1Error(pos, '"{0}" should not be here. Only color or '
                                     'cursor movement sequences should be put '
-                                    'inside \[ ... \].'.format(ps1[pos])) 
+                                    'inside \[ ... \].'.format(ps1[pos]))
 
         if ps1[pos:pos + 2] == r'\]':
             # Return the entire length of the escaped expression.
