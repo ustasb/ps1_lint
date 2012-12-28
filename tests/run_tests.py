@@ -11,8 +11,8 @@ def test():
     with open(testPs1sPath, 'r') as testPS1s:
         for ps1 in testPS1s:
             lineNum += 1
-            
-            if ps1[0] == '+': 
+
+            if ps1[0] == '+':
                 testLine(lineNum, ps1, True)
             elif ps1[0] == '-':
                 testLine(lineNum, ps1, False)
@@ -23,7 +23,7 @@ def test():
 def testLine(lineNum, ps1, validPS1):
     test.tests += 1
     print('{0}. Line {1}'.format(test.tests, lineNum))
-    
+
     ps1 = ps1.strip()
     isValid = ps1Lint.parse(ps1[1:])
 
@@ -41,6 +41,7 @@ if __name__ == '__main__':
     import sys
     import timeit
 
+    # Run multiple times to better see performance improvements.
     TESTS = 50
 
     oldStdOut = sys.stdout
