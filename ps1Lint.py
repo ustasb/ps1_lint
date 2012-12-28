@@ -79,7 +79,6 @@ def parse(ps1):
         print('Error: {0}\n{1}\n{2}^'.format(error.msg, ps1, '-' * parserPos))
         return False
     else:
-        print('Success: "{0}" is a valid PS1!'.format(ps1))
         return True
 
 # CSI: Control Sequence Introducer
@@ -166,4 +165,5 @@ if __name__ == '__main__':
     parser.add_argument('bashPS1', help='single quoted bash PS1')
     args = parser.parse_args()
 
-    parse(args.bashPS1)
+    if parse(args.bashPS1):
+        print('Success: "{0}" is a valid PS1!'.format(args.bashPS1))
