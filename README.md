@@ -1,6 +1,7 @@
 # PS1Lint
 
-*Initial release: 06/03/2012*
+- Initial release: 06/03/2012
+- Author: [Brian Ustas](http://brianustas.com)
 
 PS1Lint is a tool for finding flaws in Bash PS1 strings. While Bash is forgiving, a poorly formatted PS1 can cause line wrapping issues.
 
